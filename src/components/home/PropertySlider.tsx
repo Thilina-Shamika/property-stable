@@ -1,5 +1,6 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import PropertyCard from './PropertyCard';
+import { useEffect, useState } from 'react';
 
 const properties = [
   {
@@ -46,9 +47,12 @@ const PropertySlider = () => {
   return (
     <div className="mt-16 -mx-4 sm:-mx-6">
       <div className="overflow-hidden px-4 sm:px-6" ref={emblaRef}>
-        <div className="flex gap-8">
+        <div className="flex gap-4 md:gap-8">
           {properties.map((property, index) => (
-            <div className="flex-[0_0_calc(31%-1rem)]" key={index}>
+            <div 
+              className="flex-[0_0_calc(100%-2rem)] md:flex-[0_0_calc(31%-1rem)]" 
+              key={index}
+            >
               <PropertyCard {...property} />
             </div>
           ))}

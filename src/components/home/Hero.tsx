@@ -2,13 +2,22 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
   const [activeTab, setActiveTab] = useState('buy');
+  const [propertyType, setPropertyType] = useState('');
+  const [location, setLocation] = useState('');
+  const [bedrooms, setBedrooms] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative min-h-[120vh] md:h-screen w-full overflow-hidden py-20 md:py-0">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -33,7 +42,7 @@ const Hero = () => {
             </div>
             {/* Second row - Header */}
             <div className="w-full max-w-3xl p-6 text-center">
-              <h1 className="text-[45px] font-bold text-white leading-tight">
+              <h1 className="text-3xl md:text-[45px] font-bold text-white leading-tight">
                 Journey To Your Perfect<br />
                 Real Estate Deal
               </h1>
@@ -44,7 +53,7 @@ const Hero = () => {
             {/* Third row - Search Filters */}
             <div className="w-full max-w-6xl">
               {/* Tabs */}
-              <div className="flex bg-[#f5f5f5] rounded-t-lg overflow-hidden">
+              <div className="flex flex-wrap bg-[#f5f5f5] rounded-t-lg overflow-hidden">
                 <button
                   onClick={() => setActiveTab('buy')}
                   className={`px-8 py-4 text-sm font-medium transition-colors ${
@@ -89,45 +98,63 @@ const Hero = () => {
                 </Link>
               </div>
 
-              {/* Filter Section */}
-              <div className="bg-white rounded-b-lg p-4 flex items-center gap-4">
-                <select className="flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none">
-                  <option value="">Select Property Type</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="villa">Villa</option>
-                  <option value="townhouse">Townhouse</option>
-                  <option value="penthouse">Penthouse</option>
-                </select>
+              {/* Filter Section - Only render on client side */}
+              {isMounted && (
+                <div className="bg-white rounded-b-lg p-4 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                  <select 
+                    className="w-full md:flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none"
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
+                  >
+                    <option value="">Select Property Type</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="villa">Villa</option>
+                    <option value="townhouse">Townhouse</option>
+                    <option value="penthouse">Penthouse</option>
+                  </select>
 
-                <select className="flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none">
-                  <option value="">Select Bedrooms</option>
-                  <option value="studio">Studio</option>
-                  <option value="1">1 Bedroom</option>
-                  <option value="2">2 Bedrooms</option>
-                  <option value="3">3 Bedrooms</option>
-                  <option value="4">4+ Bedrooms</option>
-                </select>
+                  <select 
+                    className="w-full md:flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  >
+                    <option value="">Select Location</option>
+                    <option value="dubai-marina">Dubai Marina</option>
+                    <option value="palm-jumeirah">Palm Jumeirah</option>
+                    <option value="downtown-dubai">Downtown Dubai</option>
+                    <option value="dubai-hills">Dubai Hills</option>
+                  </select>
 
-                <select className="flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none">
-                  <option value="">Select Min Price</option>
-                  <option value="100000">100,000</option>
-                  <option value="200000">200,000</option>
-                  <option value="500000">500,000</option>
-                  <option value="1000000">1,000,000</option>
-                </select>
+                  <select 
+                    className="w-full md:flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none"
+                    value={bedrooms}
+                    onChange={(e) => setBedrooms(e.target.value)}
+                  >
+                    <option value="">Bedrooms</option>
+                    <option value="studio">Studio</option>
+                    <option value="1">1 Bedroom</option>
+                    <option value="2">2 Bedrooms</option>
+                    <option value="3">3 Bedrooms</option>
+                    <option value="4">4+ Bedrooms</option>
+                  </select>
 
-                <select className="flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none">
-                  <option value="">Select Max Price</option>
-                  <option value="200000">200,000</option>
-                  <option value="500000">500,000</option>
-                  <option value="1000000">1,000,000</option>
-                  <option value="2000000">2,000,000+</option>
-                </select>
+                  <select 
+                    className="w-full md:flex-1 px-4 py-3 bg-transparent text-gray-600 text-sm focus:outline-none"
+                    value={priceRange}
+                    onChange={(e) => setPriceRange(e.target.value)}
+                  >
+                    <option value="">Price Range</option>
+                    <option value="0-1000000">Up to 1M</option>
+                    <option value="1000000-2000000">1M - 2M</option>
+                    <option value="2000000-5000000">2M - 5M</option>
+                    <option value="5000000+">5M+</option>
+                  </select>
 
-                <button className="px-8 py-3 bg-[#1b2734] text-white rounded-full font-medium text-sm hover:bg-[#2c3e50] transition-colors">
-                  SEARCH PROPERTIES
-                </button>
-              </div>
+                  <button className="px-8 py-3 bg-[#1b2734] text-white rounded-full font-medium text-sm hover:bg-[#2c3e50] transition-colors">
+                    SEARCH PROPERTIES
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
