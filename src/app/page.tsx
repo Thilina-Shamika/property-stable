@@ -7,6 +7,7 @@ import Mortgage from '@/components/home/Mortgage';
 import LatestLaunches from '@/components/home/LatestLaunches';
 import FullWidthSection from '@/components/home/FullWidthSection';
 import Counter from '@/components/home/Counter';
+import HomeForm from '@/components/home/HomeForm';
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <LatestLaunches />
       <FullWidthSection />
       <Counter />
+      <HomeForm />
     </main>
   );
 } 

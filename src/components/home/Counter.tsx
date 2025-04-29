@@ -30,7 +30,7 @@ const Counter = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {counterData.map((item, index) => (
             <div key={index} className="text-center">
