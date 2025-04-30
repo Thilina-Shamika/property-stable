@@ -9,6 +9,7 @@ import "yet-another-react-lightbox/styles.css";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { ShowerHead } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface BuyProperty {
   _id: string;
@@ -114,10 +115,18 @@ export default function BuyPropertyClient({ params }: PageParams) {
       });
       setPhone(undefined);
       
-      // You might want to show a success message here
+      toast.success(`Thank you for your interest in ${property?.name || 'this property'}! We will contact you shortly.`, {
+        duration: 5000,
+        style: {
+          background: '#333',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+      });
     } catch (error) {
       console.error('Error submitting inquiry:', error);
-      // You might want to show an error message here
+      toast.error('Failed to register your interest. Please try again.');
     }
   };
 

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
+import ConsultingForm from '@/components/mortgage/ConsultingForm';
+import { Toaster } from 'react-hot-toast';
 
 export default function MortgageCalculatorPage() {
   const [purchasePrice, setPurchasePrice] = useState(200000);
@@ -10,6 +12,7 @@ export default function MortgageCalculatorPage() {
   const [loanPeriod, setLoanPeriod] = useState(1);
   const [interestRate, setInterestRate] = useState(1);
   const [monthlyRepayment, setMonthlyRepayment] = useState(0);
+  const [showConsultingForm, setShowConsultingForm] = useState(false);
 
   useEffect(() => {
     calculateMonthlyRepayment();
@@ -53,6 +56,7 @@ export default function MortgageCalculatorPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <Toaster position="top-right" />
       <Header />
       <div className="max-w-2xl border border-gray-200 shadow-md rounded-lg mt-30 mx-auto px-4 py-6">
         <h1 className="text-xl font-bold text-[#002D4B] mb-4">
@@ -194,7 +198,10 @@ export default function MortgageCalculatorPage() {
               Need help or ready to proceed?
             </h2>
             <div className="flex gap-2">
-              <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm">
+              <button 
+                onClick={() => setShowConsultingForm(true)}
+                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+              >
                 Start Mortgage Approval
               </button>
               <button className="border-2 text-black px-4 py-2 rounded-lg hover:bg-gray-800 hover:text-white transition-colors text-sm">
@@ -204,6 +211,19 @@ export default function MortgageCalculatorPage() {
           </div>
         </div>
       </div>
+
+      {showConsultingForm && (
+        <ConsultingForm
+          calculatorValues={{
+            purchasePrice,
+            downPayment,
+            loanPeriod,
+            interestRate,
+            monthlyRepayment,
+          }}
+          onClose={() => setShowConsultingForm(false)}
+        />
+      )}
     </main>
   );
 } 
