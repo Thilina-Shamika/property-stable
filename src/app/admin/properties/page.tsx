@@ -8,16 +8,24 @@ import { Switch } from '@/components/ui/switch';
 
 interface Property {
   _id: string;
-  title: string;
+  name: string;
+  propertyType: string;
+  price: string;
   location: string;
-  completionDate: string;
-  dldPermitNumber: string;
-  mainImage: string;
-  status: 'published' | 'draft';
+}
+
+interface Properties {
+  buy: Property[];
+  rent: Property[];
+  commercial: Property[];
 }
 
 export default function PropertiesPage() {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<Properties>({
+    buy: [],
+    rent: [],
+    commercial: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,9 +36,9 @@ export default function PropertiesPage() {
   const fetchProperties = async () => {
     try {
       const [buyResponse, rentResponse, commercialResponse] = await Promise.all([
-        fetch('/api/buy', { cache: 'no-store' }),
-        fetch('/api/rent', { cache: 'no-store' }),
-        fetch('/api/commercial', { cache: 'no-store' })
+        fetch('/api/properties/buy?showAll=true', { cache: 'no-store' }),
+        fetch('/api/properties/rent?showAll=true', { cache: 'no-store' }),
+        fetch('/api/properties/commercial?showAll=true', { cache: 'no-store' })
       ]);
 
       const [buyProperties, rentProperties, commercialProperties] = await Promise.all([
@@ -46,6 +54,9 @@ export default function PropertiesPage() {
       });
     } catch (error) {
       console.error('Error fetching properties:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch properties');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,19 +112,29 @@ export default function PropertiesPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-500">
-        {error}
+      <div className="text-center py-12">
+        <p className="text-red-600">Error: {error}</p>
+        <button
+          onClick={fetchProperties}
+          className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Properties</h1>
         <div className="space-x-4">
@@ -138,71 +159,49 @@ export default function PropertiesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Handover Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DLD Permit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {properties.map((property) => (
-              <tr key={property._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-20 w-20 flex-shrink-0 relative">
-                      <Image
-                        src={property.mainImage}
-                        alt={property.title}
-                        fill
-                        className="rounded-lg object-cover"
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{property.title}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.location}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.completionDate}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.dldPermitNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Switch
-                    checked={property.status === 'published'}
-                    onCheckedChange={() => handleStatusToggle(property._id, property.status)}
-                  />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="flex space-x-3">
-                    <Link
-                      href={`/admin/edit-off-plan/${property._id}`}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Pencil size={20} />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(property._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Buy Properties Section */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Buy Properties</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.buy.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Rent Properties Section */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Rent Properties</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.rent.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Commercial Properties Section */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Commercial Properties</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.commercial.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

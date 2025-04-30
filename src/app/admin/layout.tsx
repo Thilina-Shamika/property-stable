@@ -13,6 +13,7 @@ export default function AdminLayout({
   const navigation = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/add-buy-property', label: 'Add Buy', icon: '🏠' },
+    { href: '/admin/manage-buy-property', label: 'Manage Buy', icon: '📋' },
     { href: '/admin/add-rent-property', label: 'Add Rent', icon: '🔑' },
     { href: '/admin/add-commercial-property', label: 'Add Commercial', icon: '🏢' },
     { href: '/admin/add-off-plan', label: 'Add Off-Plan', icon: '🏗️' },

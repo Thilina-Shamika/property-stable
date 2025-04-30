@@ -1,16 +1,20 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-export function middleware(request: NextRequest) {
-  // Check if the request is for an admin route
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    // Here you would normally check for authentication
-    // For now, we'll just have a placeholder
-    const isAuthenticated = false; // This should be replaced with actual auth check
+export async function middleware(request: NextRequest) {
+  // Check if the request is for a protected route
+  if (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin')) {
+    const token = await getToken({ req: request });
 
-    if (!isAuthenticated) {
+    if (!token) {
+      // Store the original URL to redirect back after login
+      const from = request.nextUrl.pathname;
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('from', from);
+      
       // Redirect to login if not authenticated
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(loginUrl);
     }
   }
 
@@ -18,5 +22,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/dashboard/:path*',
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 }; 
