@@ -85,6 +85,17 @@ const Hero = () => {
                   COMMERCIAL
                 </button>
                 <Link
+                  href="/off-plan"
+                  className={`px-8 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'off-plan'
+                      ? 'bg-white text-gray-800'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  onClick={() => setActiveTab('off-plan')}
+                >
+                  OFF PLAN
+                </Link>
+                <Link
                   href="/list-property"
                   className="px-8 py-4 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
                 >

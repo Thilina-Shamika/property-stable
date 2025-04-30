@@ -15,6 +15,10 @@ const offPlanPropertySchema = new Schema({
     type: String,
     required: true
   },
+  beds: {
+    type: String,
+    required: true
+  },
   price: {
     type: String,
     required: true

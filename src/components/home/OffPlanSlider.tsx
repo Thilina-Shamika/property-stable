@@ -15,6 +15,7 @@ interface OffPlanProperty {
   developer: string;
   handoverDate: string;
   status: 'draft' | 'published';
+  beds: string;
 }
 
 const OffPlanSlider = () => {
@@ -125,6 +126,10 @@ const OffPlanSlider = () => {
                     <div className="flex items-center">
                       <span className="text-sm text-gray-500">Handover:</span>
                       <span className="text-sm text-gray-900 ml-2">{property.handoverDate}</span>
+                    </div>
+                    <div className="flex items-center hidden">
+                      <span className="text-sm text-gray-500">Beds:</span>
+                      <span className="text-sm text-gray-900 ml-2">{property.beds}</span>
                     </div>
                   </div>
 

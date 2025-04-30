@@ -13,7 +13,6 @@ interface OffPlanProperty {
   mainImage: string;
   handoverDate: string;
   dldPermitNumber: string;
-  status: 'draft' | 'published';
   price: string;
   location: string;
   developer: string;
@@ -43,7 +42,7 @@ export default function ManageOffPlanPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        cache: 'no-store' // Disable caching to always get fresh data
+        cache: 'no-store'
       });
       
       console.log('API Response status:', response.status);
@@ -56,12 +55,15 @@ export default function ManageOffPlanPage() {
       
       const data = await response.json();
       console.log('Raw API Response:', data);
-      console.log('Number of properties:', Array.isArray(data) ? data.length : 'Not an array');
       
+      // Ensure data is an array
       if (!Array.isArray(data)) {
         console.error('Invalid data format:', data);
-        throw new Error('Invalid data format received from server');
+        setProperties([]);
+        return;
       }
+      
+      console.log('Number of properties:', data.length);
       
       // Sort properties by createdAt in descending order (newest first)
       const sortedData = data.sort((a, b) => 
@@ -72,6 +74,7 @@ export default function ManageOffPlanPage() {
     } catch (error) {
       console.error('Error fetching properties:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch properties');
+      setProperties([]); // Set empty array on error
     } finally {
       setIsLoading(false);
     }
@@ -186,153 +189,125 @@ export default function ManageOffPlanPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Manage Off-Plan Properties</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Total Properties: {properties.length} ({properties.filter(p => p.status === 'published').length} published)
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold">Manage Off-Plan Properties</h1>
         <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Search properties..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border rounded-lg"
+          />
           <button
             onClick={handleRefresh}
-            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
           >
             Refresh
           </button>
-          <Link 
-            href="/admin/add-off-plan" 
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90"
-          >
-            Add New Property
-          </Link>
         </div>
       </div>
 
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search by title, location, or developer..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </div>
-
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('title')}
-              >
-                Property {sortField === 'title' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('developer')}
-              >
-                Developer {sortField === 'developer' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('price')}
-              >
-                Price {sortField === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('handoverDate')}
-              >
-                Handover {sortField === 'handoverDate' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                DLD Permit
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredAndSortedProperties.map((property) => (
-              <tr key={property._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-16 w-16 relative flex-shrink-0">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-500">{error}</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Image
+                </th>
+                <th 
+                  className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('title')}
+                >
+                  Title {sortField === 'title' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('developer')}
+                >
+                  Developer {sortField === 'developer' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('price')}
+                >
+                  Price {sortField === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('handoverDate')}
+                >
+                  Handover Date {sortField === 'handoverDate' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </th>
+                <th 
+                  className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={() => handleSort('dldPermitNumber')}
+                >
+                  DLD Permit {sortField === 'dldPermitNumber' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredAndSortedProperties.map((property) => (
+                <tr key={property._id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="relative h-16 w-16">
                       <Image
-                        src={property.mainImage || '/placeholder.jpg'}
+                        src={property.mainImage || '/images/placeholder.jpg'}
                         alt={property.title}
                         fill
-                        className="rounded-lg object-cover"
-                        sizes="(max-width: 64px) 100vw, 64px"
+                        className="object-cover rounded"
                       />
                     </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{property.title}</div>
-                      <div className="text-sm text-gray-500">{property.location}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{property.title}</div>
+                    <div className="text-sm text-gray-500">{property.location}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {property.developer}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {property.price}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {property.handoverDate}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {property.dldPermitNumber}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex gap-2">
+                      <Link href={`/admin/edit-off-plan/${property._id}`}>
+                        <button className="p-2 text-blue-600 hover:text-blue-800">
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(property._id)}
+                        className="p-2 text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.developer}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.price}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.handoverDate}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.dldPermitNumber || 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <Switch
-                      checked={property.status === 'published'}
-                      onCheckedChange={(checked) => 
-                        handleStatusChange(property._id, checked ? 'published' : 'draft')
-                      }
-                    />
-                    <span className={`ml-2 text-sm ${
-                      property.status === 'published' ? 'text-green-600' : 'text-gray-500'
-                    }`}>
-                      {property.status === 'published' ? 'Published' : 'Draft'}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="flex space-x-2">
-                    <Link href={`/admin/edit-off-plan/${property._id}`}>
-                      <Button variant="outline" size="sm" className="hover:bg-gray-100">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => handleDelete(property._id)}
-                      className="hover:bg-red-600"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredAndSortedProperties.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            {searchTerm ? 'No properties match your search criteria.' : 'No properties available.'}
-          </div>
-        )}
-      </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 } 

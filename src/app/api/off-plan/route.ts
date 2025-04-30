@@ -13,10 +13,22 @@ export async function POST(request: Request) {
     // Log the received data
     console.log('Received data:', data);
 
+    // Validate required fields
+    const requiredFields = ['title', 'propertyType', 'beds', 'price', 'description', 'handoverDate', 'developer', 'location', 'projectNumber'];
+    const missingFields = requiredFields.filter(field => !data[field]);
+    
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { error: `Missing required fields: ${missingFields.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
     // Prepare the property data
     const propertyData = {
       title: data.title || '',
       propertyType: data.propertyType || 'Apartment',
+      beds: data.beds || '',
       price: data.price || '',
       priceRange: {
         min: 0,
@@ -61,26 +73,30 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    console.log('Connecting to database...');
     await connectDB();
-    console.log('Database connected successfully');
+    console.log('Connected to database successfully');
 
-    // Get query parameters
     const { searchParams } = new URL(request.url);
     const showAll = searchParams.get('showAll') === 'true';
+    console.log('Fetching properties with showAll:', showAll);
 
-    // If showAll is true, return all properties, otherwise only published ones
     const query = showAll ? {} : { status: 'published' };
+    const properties = await OffPlanProperty.find(query)
+      .sort({ createdAt: -1 })
+      .lean();
     
-    console.log('Fetching properties with query:', query);
-    const properties = await OffPlanProperty.find(query).sort({ createdAt: -1 });
-    console.log('Fetched properties:', properties.length);
-    
+    console.log('Number of properties found:', properties.length);
+    console.log('First property sample:', properties[0] ? {
+      title: properties[0].title,
+      status: properties[0].status,
+      mainImage: properties[0].mainImage
+    } : 'No properties found');
+
     return NextResponse.json(properties);
   } catch (error) {
-    console.error('Error in GET /api/off-plan:', error);
+    console.error('Error fetching off-plan properties:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch properties' },
+      { error: 'Failed to fetch off-plan properties' },
       { status: 500 }
     );
   }
