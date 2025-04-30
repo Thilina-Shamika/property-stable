@@ -45,7 +45,6 @@ export default function AdminDashboard() {
 
   const quickLinks = [
     { href: '/admin/add-buy-property', label: 'Add Buy Property', icon: '🏠', color: 'bg-green-500' },
-    { href: '/admin/add-rent-property', label: 'Add Rent Property', icon: '🔑', color: 'bg-yellow-500' },
     { href: '/admin/add-commercial-property', label: 'Add Commercial Property', icon: '🏢', color: 'bg-purple-500' },
   ];
 
