@@ -33,90 +33,76 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     console.log('Received form data');
-    
-    // Handle file uploads
-    const images: string[] = [];
-    let qrCode = '';
 
     // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public/uploads/property');
-    await mkdir(uploadDir, { recursive: true });
-    console.log('Created upload directory');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
+    await mkdir(uploadsDir, { recursive: true });
+    console.log('Created uploads directory');
 
     // Process images
-    for (let i = 0; formData.get(`images[${i}]`); i++) {
-      const file = formData.get(`images[${i}]`) as File;
-      if (file) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const filename = `${Date.now()}-${file.name}`;
-        const filepath = path.join(uploadDir, filename);
+    const images = formData.getAll('images[]');
+    const imagePaths = [];
+    for (const image of images) {
+      if (image instanceof File) {
+        const buffer = Buffer.from(await image.arrayBuffer());
+        const filename = `${Date.now()}-${image.name}`;
+        const filepath = path.join(uploadsDir, filename);
         await writeFile(filepath, buffer);
-        images.push(`/uploads/property/${filename}`);
-        console.log('Processed image:', filename);
+        imagePaths.push(`/uploads/property/${filename}`);
+      }
+    }
+    console.log('Processed images');
+
+    // Process QR code
+    let qrCodePath = '';
+    const qrCode = formData.get('qrCode');
+    if (qrCode instanceof File) {
+      const buffer = Buffer.from(await qrCode.arrayBuffer());
+      const filename = `${Date.now()}-${qrCode.name}`;
+      const filepath = path.join(uploadsDir, filename);
+      await writeFile(filepath, buffer);
+      qrCodePath = `/uploads/property/${filename}`;
+    }
+    console.log('Processed QR code');
+
+    // Prepare property data
+    const propertyData = {
+      propertyType: formData.get('propertyType'),
+      price: formData.get('price'),
+      name: formData.get('name'),
+      location: formData.get('location'),
+      beds: formData.get('beds'),
+      baths: formData.get('baths'),
+      sqft: formData.get('sqft'),
+      description: formData.get('description'),
+      indoorAmenities: JSON.parse(formData.get('indoorAmenities') as string),
+      outdoorAmenities: JSON.parse(formData.get('outdoorAmenities') as string),
+      furnishing: formData.get('furnishing'),
+      reference: formData.get('reference'),
+      zoneName: formData.get('zoneName'),
+      dldPermitNumber: formData.get('dldPermitNumber'),
+      images: imagePaths,
+      qrCode: qrCodePath,
+      status: 'draft'
+    } as const;
+
+    // Validate required fields
+    const requiredFields = ['propertyType', 'price', 'name', 'location', 'beds', 'baths', 'sqft'] as const;
+    for (const field of requiredFields) {
+      if (!propertyData[field]) {
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` },
+          { status: 400 }
+        );
       }
     }
 
-    // Process QR code
-    const qrFile = formData.get('qrCode') as File;
-    if (qrFile) {
-      const bytes = await qrFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-${qrFile.name}`;
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      qrCode = `/uploads/property/${filename}`;
-      console.log('Processed QR code:', filename);
-    }
-
-    // Prepare property data
-    const propertyData: PropertyData = {
-      propertyType: formData.get('propertyType') as string,
-      price: formData.get('price') as string,
-      name: formData.get('name') as string,
-      location: formData.get('location') as string,
-      beds: formData.get('beds') as string,
-      baths: formData.get('baths') as string,
-      sqft: formData.get('sqft') as string,
-      description: formData.get('description') as string,
-      indoorAmenities: JSON.parse(formData.get('indoorAmenities') as string || '[]'),
-      outdoorAmenities: JSON.parse(formData.get('outdoorAmenities') as string || '[]'),
-      furnishing: formData.get('furnishing') as string,
-      reference: formData.get('reference') as string,
-      zoneName: formData.get('zoneName') as string,
-      dldPermitNumber: formData.get('dldPermitNumber') as string,
-      images,
-      qrCode,
-      status: 'draft'
-    };
-
-    console.log('Prepared property data:', propertyData);
-
-    // Validate required fields
-    const requiredFields = [
-      'propertyType', 'price', 'name', 'location', 'beds', 
-      'baths', 'sqft', 'description', 'furnishing', 'reference',
-      'zoneName', 'dldPermitNumber'
-    ] as const;
-    
-    const missingFields = requiredFields.filter(field => !propertyData[field as keyof PropertyData]);
-    
-    if (missingFields.length > 0) {
-      console.error('Missing required fields:', missingFields);
-      return NextResponse.json(
-        { error: `Missing required fields: ${missingFields.join(', ')}` },
-        { status: 400 }
-      );
-    }
-
-    // Create new property
+    // Save to database
     const property = new BuyProperty(propertyData);
+    await property.save();
+    console.log('Saved property to database');
 
-    // Save the property
-    const savedProperty = await property.save();
-    console.log('Property saved successfully:', savedProperty);
-
-    return NextResponse.json(savedProperty, { status: 201 });
+    return NextResponse.json({ success: true, property });
   } catch (error) {
     console.error('Error in POST /api/properties/buy:', error);
     return NextResponse.json(

@@ -137,7 +137,7 @@ export default function AddBuyPropertyPage() {
       }
 
       toast.success('Property created successfully');
-      router.push('/admin/manage-buy-property');
+      router.push('/admin/properties');
     } catch (error) {
       console.error('Error creating property:', error);
       toast.error('Failed to create property');

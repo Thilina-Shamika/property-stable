@@ -65,16 +65,6 @@ const Hero = () => {
                   BUY
                 </button>
                 <button
-                  onClick={() => setActiveTab('rent')}
-                  className={`px-8 py-4 text-sm font-medium transition-colors ${
-                    activeTab === 'rent'
-                      ? 'bg-white text-gray-800'
-                      : 'text-gray-600 hover:text-gray-800'
-                  }`}
-                >
-                  RENT
-                </button>
-                <button
                   onClick={() => setActiveTab('commercial')}
                   className={`px-8 py-4 text-sm font-medium transition-colors ${
                     activeTab === 'commercial'

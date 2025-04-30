@@ -30,13 +30,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             BUY
           </Link>
           <Link 
-            href="/rent" 
-            className="text-white hover:text-white/80 text-sm font-medium transition-colors"
-            onClick={onClose}
-          >
-            RENT
-          </Link>
-          <Link 
             href="/commercial" 
             className="text-white hover:text-white/80 text-sm font-medium transition-colors"
             onClick={onClose}

@@ -55,12 +55,6 @@ const Header = () => {
                 BUY
               </Link>
               <Link 
-                href="/rent" 
-                className="text-white hover:text-white/80 text-sm font-medium transition-colors"
-              >
-                RENT
-              </Link>
-              <Link 
                 href="/commercial" 
                 className="text-white hover:text-white/80 text-sm font-medium transition-colors"
               >

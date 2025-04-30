@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
@@ -43,13 +43,14 @@ const furnishingOptions = [
 ];
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditBuyPropertyPage({ params }: PageProps) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -74,12 +75,12 @@ export default function EditBuyPropertyPage({ params }: PageProps) {
 
   useEffect(() => {
     fetchPropertyData();
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const fetchPropertyData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/properties/buy/${params.id}`);
+      const response = await fetch(`/api/properties/buy/${resolvedParams.id}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch property data');
@@ -190,7 +191,7 @@ export default function EditBuyPropertyPage({ params }: PageProps) {
         formDataToSend.append('qrCode', qrCode);
       }
 
-      const response = await fetch(`/api/properties/buy/${params.id}`, {
+      const response = await fetch(`/api/properties/buy/${resolvedParams.id}`, {
         method: 'PUT',
         body: formDataToSend
       });
