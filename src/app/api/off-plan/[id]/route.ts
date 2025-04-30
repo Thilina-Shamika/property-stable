@@ -79,7 +79,7 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching property:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch property' },
+      { error: 'Failed to fetch property' },
       { status: 500 }
     );
   }
