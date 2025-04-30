@@ -13,6 +13,7 @@ interface CommercialProperty {
   propertyType: string;
   location: string;
   sqft: string;
+  price: string;
   description: string;
   reference: string;
   zoneName: string;

@@ -118,8 +118,8 @@ export default function AddBuyPropertyPage() {
       });
 
       // Append images
-      images.forEach((image, index) => {
-        formDataToSend.append(`images[${index}]`, image);
+      images.forEach((image) => {
+        formDataToSend.append('images[]', image);
       });
 
       // Append QR code if exists

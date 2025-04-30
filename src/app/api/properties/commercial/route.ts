@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     console.log('Connected to database successfully');
 
     const formData = await request.formData();
-    console.log('Received form data');
+    console.log('Received form data:', Object.fromEntries(formData.entries()));
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
@@ -22,43 +22,45 @@ export async function POST(request: Request) {
     // Process images
     const imagePaths = [];
     for (let i = 0; formData.get(`images[${i}]`); i++) {
-      const image = formData.get(`images[${i}]`) as File;
-      if (image) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const filename = `${Date.now()}-${image.name}`;
-        const filepath = path.join(uploadsDir, filename);
-        await writeFile(filepath, buffer);
-        imagePaths.push(`/uploads/property/${filename}`);
+      const imageUrl = formData.get(`images[${i}]`) as string;
+      if (imageUrl) {
+        imagePaths.push(imageUrl);
       }
     }
-    console.log('Processed images');
+    console.log('Processed images:', imagePaths);
 
     // Process QR code
-    let qrCodePath = '';
-    const qrCode = formData.get('qrCode');
-    if (qrCode instanceof File) {
-      const buffer = Buffer.from(await qrCode.arrayBuffer());
-      const filename = `${Date.now()}-${qrCode.name}`;
-      const filepath = path.join(uploadsDir, filename);
-      await writeFile(filepath, buffer);
-      qrCodePath = `/uploads/property/${filename}`;
-    }
-    console.log('Processed QR code');
+    const qrCodeUrl = formData.get('qrCode') as string;
+    console.log('QR code URL:', qrCodeUrl);
 
     // Prepare property data
     const propertyData = {
       propertyType: formData.get('propertyType'),
+      price: formData.get('price'),
       sqft: formData.get('sqft'),
       name: formData.get('name'),
       location: formData.get('location'),
       description: formData.get('description'),
-      reference: formData.get('reference'),
-      zoneName: formData.get('zoneName'),
-      dldPermitNumber: formData.get('dldPermitNumber'),
+      reference: formData.get('reference') || '',
+      zoneName: formData.get('zoneName') || '',
+      dldPermitNumber: formData.get('dldPermitNumber') || '',
       images: imagePaths,
-      qrCodeImage: qrCodePath,
+      qrCodeImage: qrCodeUrl || '',
       createdAt: new Date()
     };
+
+    console.log('Property data to be saved:', propertyData);
+
+    // Validate required fields
+    const requiredFields = ['propertyType', 'price', 'sqft', 'name', 'location', 'description'];
+    for (const field of requiredFields) {
+      if (!propertyData[field as keyof typeof propertyData]) {
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` },
+          { status: 400 }
+        );
+      }
+    }
 
     // Create and save property
     const property = await CommercialProperty.create(propertyData);
@@ -68,7 +70,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating commercial property:', error);
     return NextResponse.json(
-      { error: 'Failed to create commercial property' },
+      { error: error instanceof Error ? error.message : 'Failed to create commercial property' },
       { status: 500 }
     );
   }

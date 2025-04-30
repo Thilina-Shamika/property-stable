@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const commercialPropertySchema = new mongoose.Schema({
+const rentPropertySchema = new mongoose.Schema({
   propertyType: {
     type: String,
     required: true,
@@ -47,4 +47,4 @@ const commercialPropertySchema = new mongoose.Schema({
   },
 });
 
-export const CommercialProperty = mongoose.models.CommercialProperty || mongoose.model('CommercialProperty', commercialPropertySchema); 
+export const RentProperty = mongoose.models.RentProperty || mongoose.model('RentProperty', rentPropertySchema); 

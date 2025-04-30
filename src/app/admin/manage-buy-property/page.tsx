@@ -216,7 +216,7 @@ export default function ManageBuyPropertyPage() {
                         className="object-cover rounded"
                         onError={(e) => {
                           console.error('Error loading image:', property.images[0]);
-                          e.currentTarget.src = '/placeholder-image.jpg';
+                          e.currentTarget.src = '/images/placeholder.svg';
                         }}
                       />
                     </div>

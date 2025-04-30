@@ -4,6 +4,7 @@ import { BuyProperty } from '@/models/BuyProperty';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { mkdir } from 'fs/promises';
+import { join } from 'path';
 
 type PropertyData = {
   propertyType: string;
@@ -40,18 +41,45 @@ export async function POST(request: Request) {
     console.log('Created uploads directory');
 
     // Process images
-    const images = formData.getAll('images[]');
-    const imagePaths = [];
-    for (const image of images) {
-      if (image instanceof File) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const filename = `${Date.now()}-${image.name}`;
-        const filepath = path.join(uploadsDir, filename);
-        await writeFile(filepath, buffer);
-        imagePaths.push(`/uploads/property/${filename}`);
-      }
+    const imageFiles = formData.getAll('images[]') as File[];
+    console.log('Received images:', imageFiles.length);
+    
+    if (imageFiles.length === 0) {
+      return NextResponse.json(
+        { error: 'At least one image is required' },
+        { status: 400 }
+      );
     }
-    console.log('Processed images');
+
+    const imageUrls = await Promise.all(
+      imageFiles.map(async (file) => {
+        if (!(file instanceof File)) {
+          throw new Error('Invalid file type');
+        }
+        
+        try {
+          const bytes = await file.arrayBuffer();
+          const buffer = Buffer.from(bytes);
+          const filename = `${Date.now()}-${file.name}`;
+          const filepath = join(uploadsDir, filename);
+          await writeFile(filepath, buffer);
+          return `/uploads/property/${filename}`;
+        } catch (error) {
+          console.error('Error processing image:', error);
+          throw new Error(`Failed to process image: ${file.name}`);
+        }
+      })
+    ).catch(error => {
+      console.error('Error processing images:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to process images' },
+        { status: 500 }
+      );
+    });
+
+    if (imageUrls instanceof NextResponse) {
+      return imageUrls;
+    }
 
     // Process QR code
     let qrCodePath = '';
@@ -81,7 +109,7 @@ export async function POST(request: Request) {
       reference: formData.get('reference'),
       zoneName: formData.get('zoneName'),
       dldPermitNumber: formData.get('dldPermitNumber'),
-      images: imagePaths,
+      images: imageUrls,
       qrCode: qrCodePath,
       status: 'draft'
     } as const;

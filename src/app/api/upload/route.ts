@@ -6,41 +6,47 @@ import path from 'path';
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const files = formData.getAll('files') as File[];
+    const type = formData.get('type') as string;
 
-    if (!file) {
+    if (!files || files.length === 0) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'No files provided' },
         { status: 400 }
       );
     }
 
-    // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Create unique filename
-    const filename = `${Date.now()}-${file.name}`;
-
     // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', type);
     try {
       await mkdir(uploadDir, { recursive: true });
     } catch (error) {
       // Directory might already exist, ignore error
     }
 
-    // Save file
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
+    // Process all files
+    const urls = await Promise.all(
+      files.map(async (file) => {
+        // Convert file to buffer
+        const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Generate URL for the uploaded file
-    const url = `/uploads/${filename}`;
+        // Create unique filename
+        const filename = `${Date.now()}-${file.name}`;
 
-    return NextResponse.json({ url });
+        // Save file
+        const filepath = path.join(uploadDir, filename);
+        await writeFile(filepath, buffer);
+
+        // Generate URL for the uploaded file
+        return `/uploads/${type}/${filename}`;
+      })
+    );
+
+    return NextResponse.json({ urls });
   } catch (error) {
     console.error('Error handling file upload:', error);
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: 'Failed to upload files' },
       { status: 500 }
     );
   }

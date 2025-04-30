@@ -41,7 +41,8 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
     description: '',
     reference: '',
     zoneName: '',
-    dldPermitNumber: ''
+    dldPermitNumber: '',
+    price: ''
   });
 
   useEffect(() => {
@@ -70,7 +71,8 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
         description: data.description,
         reference: data.reference || '',
         zoneName: data.zoneName || '',
-        dldPermitNumber: data.dldPermitNumber || ''
+        dldPermitNumber: data.dldPermitNumber || '',
+        price: data.price || ''
       });
       
       setExistingImages(data.images || []);
@@ -208,6 +210,21 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Price (AED) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="Enter price in AED"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/5"
+                    required
+                  />
                 </div>
 
                 <div>
