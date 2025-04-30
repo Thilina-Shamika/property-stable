@@ -17,27 +17,26 @@ export default function MortgageCalculatorPage() {
 
   const calculateMonthlyRepayment = () => {
     const loanAmount = purchasePrice - downPayment;
-    const monthlyInterestRate = interestRate / 100 / 12;
+    const yearlyInterestRate = interestRate / 100;
     const numberOfPayments = loanPeriod * 12;
 
-    if (loanAmount <= 0 || monthlyInterestRate <= 0 || numberOfPayments <= 0) {
+    if (loanAmount <= 0 || yearlyInterestRate <= 0 || numberOfPayments <= 0) {
       setMonthlyRepayment(0);
       return;
     }
 
-    const monthlyPayment =
-      (loanAmount *
-        monthlyInterestRate *
-        Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-
-    setMonthlyRepayment(Math.round(monthlyPayment));
+    // Calculate monthly payment using the formula:
+    // Monthly Payment = (Loan Amount * (1 + Yearly Interest Rate)) / Number of Months
+    // Plus an additional 5% for fees and charges
+    const monthlyPayment = (loanAmount * (1 + yearlyInterestRate)) / numberOfPayments;
+    const monthlyPaymentWithFees = monthlyPayment * 1.05;
+    setMonthlyRepayment(Math.round(monthlyPaymentWithFees));
   };
 
   const handlePurchasePriceChange = (value: number) => {
     setPurchasePrice(value);
-    const newPercentage = (downPayment / value) * 100;
-    setDownPaymentPercentage(Math.min(Math.round(newPercentage * 10) / 10, 100));
+    const newDownPayment = (value * downPaymentPercentage) / 100;
+    setDownPayment(Math.round(newDownPayment));
   };
 
   const handleDownPaymentChange = (value: number) => {
@@ -95,15 +94,15 @@ export default function MortgageCalculatorPage() {
               <div className="flex-1">
                 <input
                   type="range"
-                  min={100000}
-                  max={120000}
+                  min={0}
+                  max={purchasePrice}
                   value={downPayment}
                   onChange={(e) => handleDownPaymentChange(Number(e.target.value))}
                   className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-0.5 text-xs text-gray-600">
-                  <span>AED {(100000).toLocaleString()}</span>
-                  <span>AED {(120000).toLocaleString()}</span>
+                  <span>AED {(0).toLocaleString()}</span>
+                  <span>AED {purchasePrice.toLocaleString()}</span>
                 </div>
                 <input
                   type="number"
@@ -190,15 +189,15 @@ export default function MortgageCalculatorPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-[#E5EEF1] p-4 rounded-lg mt-4">
+          <div className="bg-gray-100 p-4 rounded-lg mt-4">
             <h2 className="text-lg font-bold text-[#002D4B] mb-3">
               Need help or ready to proceed?
             </h2>
             <div className="flex gap-2">
-              <button className="bg-[#002D4B] text-white px-4 py-2 rounded-lg hover:bg-[#002D4B]/90 transition-colors text-sm">
+              <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm">
                 Start Mortgage Approval
               </button>
-              <button className="border-2 border-[#002D4B] text-[#002D4B] px-4 py-2 rounded-lg hover:bg-[#002D4B]/10 transition-colors text-sm">
+              <button className="border-2 text-black px-4 py-2 rounded-lg hover:bg-gray-800 hover:text-white transition-colors text-sm">
                 Speak to our team
               </button>
             </div>
