@@ -19,6 +19,24 @@ export default function BuyPage() {
   });
 
   useEffect(() => {
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    const location = params.get('location');
+    const beds = params.get('beds');
+    const minPrice = params.get('minPrice');
+    const maxPrice = params.get('maxPrice');
+
+    // Update filters if parameters exist
+    setFilters(prev => ({
+      ...prev,
+      type: type || 'all',
+      location: location || 'all',
+      beds: beds || 'all',
+      minPrice: minPrice || 'all',
+      maxPrice: maxPrice || 'all'
+    }));
+
     fetchProperties();
   }, []);
 

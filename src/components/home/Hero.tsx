@@ -16,6 +16,31 @@ const Hero = () => {
     setIsMounted(true);
   }, []);
 
+  const handleSearch = () => {
+    if (activeTab === 'buy') {
+      const params = new URLSearchParams();
+      if (propertyType) params.append('type', propertyType);
+      if (location) params.append('location', location);
+      if (bedrooms) params.append('beds', bedrooms);
+      if (priceRange) {
+        const [min, max] = priceRange.split('-');
+        if (min) params.append('minPrice', min);
+        if (max) params.append('maxPrice', max);
+      }
+      window.location.href = `/buy?${params.toString()}`;
+    } else if (activeTab === 'commercial') {
+      const params = new URLSearchParams();
+      if (propertyType) params.append('type', propertyType);
+      if (location) params.append('location', location);
+      if (priceRange) {
+        const [min, max] = priceRange.split('-');
+        if (min) params.append('minPrice', min);
+        if (max) params.append('maxPrice', max);
+      }
+      window.location.href = `/commercial?${params.toString()}`;
+    }
+  };
+
   return (
     <div className="relative min-h-[120vh] md:h-screen w-full overflow-hidden py-20 md:py-0">
       {/* Background Image */}
@@ -102,10 +127,28 @@ const Hero = () => {
                     onChange={(e) => setPropertyType(e.target.value)}
                   >
                     <option value="">Select Property Type</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="villa">Villa</option>
-                    <option value="townhouse">Townhouse</option>
-                    <option value="penthouse">Penthouse</option>
+                    {activeTab === 'buy' ? (
+                      <>
+                        <option value="apartment">Apartment</option>
+                        <option value="villa">Villa</option>
+                        <option value="townhouse">Townhouse</option>
+                        <option value="penthouse">Penthouse</option>
+                        <option value="duplex">Duplex</option>
+                        <option value="studio">Studio</option>
+                        <option value="loft">Loft</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="office">Office</option>
+                        <option value="retail">Retail</option>
+                        <option value="warehouse">Warehouse</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="shop">Shop</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="mixed-use">Mixed Use</option>
+                      </>
+                    )}
                   </select>
 
                   <select 
@@ -145,7 +188,7 @@ const Hero = () => {
                     <option value="5000000+">5M+</option>
                   </select>
 
-                  <button className="px-8 py-3 bg-[#1b2734] text-white rounded-full font-medium text-sm hover:bg-[#2c3e50] transition-colors">
+                  <button className="px-8 py-3 bg-[#1b2734] text-white rounded-full font-medium text-sm hover:bg-[#2c3e50] transition-colors" onClick={handleSearch}>
                     SEARCH PROPERTIES
                   </button>
                 </div>

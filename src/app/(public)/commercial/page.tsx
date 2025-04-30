@@ -29,6 +29,22 @@ export default function CommercialPage() {
   });
 
   useEffect(() => {
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    const location = params.get('location');
+    const minPrice = params.get('minPrice');
+    const maxPrice = params.get('maxPrice');
+
+    // Update filters if parameters exist
+    setFilters(prev => ({
+      ...prev,
+      type: type || 'all',
+      location: location || 'all',
+      minPrice: minPrice || 'all',
+      maxPrice: maxPrice || 'all'
+    }));
+
     fetchProperties();
   }, []);
 
