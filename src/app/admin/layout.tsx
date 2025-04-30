@@ -18,6 +18,7 @@ export default function AdminLayout({
     { href: '/admin/manage-commercial', label: 'Manage Commercial', icon: '📋' },
     { href: '/admin/add-off-plan', label: 'Add Off-Plan', icon: '🏗️' },
     { href: '/admin/manage-off-plan', label: 'Manage Off-Plan', icon: '📋' },
+    { href: '/admin/listed-properties', label: 'Listed Properties', icon: '📝' },
     { href: '/admin/inquiries', label: 'Inquiries', icon: '📧' },
     { href: '/admin/property-requests', label: 'Property Requests', icon: '📝' },
   ];

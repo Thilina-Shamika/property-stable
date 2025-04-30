@@ -1,5 +1,6 @@
 import { Calculator, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Mortgage = () => {
   return (
@@ -13,10 +14,13 @@ const Mortgage = () => {
             <p className="text-sm text-gray-900 mt-4">Speak to our in-house mortgage team today and get access to the best rates in the market</p>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
-              <button className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors">
-                <Calculator className="w-5 h-5" />
-                Mortgage Calculator
-              </button>
+              <Link href="/mortgage-calculator">
+                <button className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors">
+                  <Calculator className="w-5 h-5" />
+                  Mortgage Calculator
+                </button>
+              </Link>
+              
               <button className="flex items-center gap-2 px-6 py-3 border border-gray-900 text-gray-900 rounded-full hover:bg-gray-900 hover:text-white transition-colors">
                 <CalendarDays className="w-5 h-5" />
                 Schedule a Meeting

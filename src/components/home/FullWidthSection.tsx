@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const FullWidthSection = () => {
   return (
@@ -25,9 +26,12 @@ const FullWidthSection = () => {
           <p className="text-white/80 mt-6 text-sm max-w-lg">
             Our exclusive network includes hundreds of qualified buyers and high-profile tenants actively seeking premium properties in Dubai.
           </p>
+          <Link href="/list-property">
           <button className="mt-8 px-8 py-3 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-colors">
             List your Property
           </button>
+          </Link>
+
         </div>
       </div>
     </section>
