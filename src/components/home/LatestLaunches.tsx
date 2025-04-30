@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react';
-import PropertySlider from './PropertySlider';
+import OffPlanSlider from './OffPlanSlider';
 
 const LatestLaunches = () => {
   return (
@@ -20,8 +20,8 @@ const LatestLaunches = () => {
           </div>
         </div>
 
-        {/* Property Slider */}
-        <PropertySlider />
+        {/* Off-Plan Slider */}
+        <OffPlanSlider />
       </div>
     </section>
   );

@@ -85,12 +85,6 @@ const Hero = () => {
                   COMMERCIAL
                 </button>
                 <Link
-                  href="/off-plan"
-                  className="px-8 py-4 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  OFF PLAN
-                </Link>
-                <Link
                   href="/list-property"
                   className="px-8 py-4 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
                 >

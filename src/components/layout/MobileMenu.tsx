@@ -44,13 +44,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             COMMERCIAL
           </Link>
           <Link 
-            href="/off-plan" 
-            className="text-white hover:text-white/80 text-sm font-medium transition-colors"
-            onClick={onClose}
-          >
-            OFF PLAN
-          </Link>
-          <Link 
             href="/communities" 
             className="text-white hover:text-white/80 text-sm font-medium transition-colors"
             onClick={onClose}

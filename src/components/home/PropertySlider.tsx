@@ -1,59 +1,78 @@
+'use client';
+
 import useEmblaCarousel from 'embla-carousel-react';
 import PropertyCard from './PropertyCard';
 import { useEffect, useState } from 'react';
 
-const properties = [
-  {
-    image: '/images/arabian.png',
-    name: 'Creek Rise Tower',
-    address: 'Dubai Creek Harbour',
-    developer: 'Emaar Properties',
-    price: 'From AED 1,200,000',
-    handoverDate: 'Q4 2024'
-  },
-  {
-    image: '/images/creek.png',
-    name: 'Beach Mansion',
-    address: 'Dubai Marina',
-    developer: 'Select Group',
-    price: 'From AED 2,500,000',
-    handoverDate: 'Q2 2025'
-  },
-  {
-    image: '/images/harbour.jpg',
-    name: 'Palm View',
-    address: 'Palm Jumeirah',
-    developer: 'Nakheel',
-    price: 'From AED 3,800,000',
-    handoverDate: 'Q3 2024'
-  },
-  {
-    image: '/images/heights.png',
-    name: 'Downtown Views',
-    address: 'Downtown Dubai',
-    developer: 'Emaar Properties',
-    price: 'From AED 2,100,000',
-    handoverDate: 'Q1 2025'
-  }
-];
+interface Property {
+  _id: string;
+  mainImage: string;
+  title: string;
+  projectName: string;
+  masterDeveloper: string;
+  price: string;
+  handoverDate: string;
+}
 
 const PropertySlider = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [emblaRef] = useEmblaCarousel({
     align: 'start',
     slidesToScroll: 1,
     dragFree: true
   });
 
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('/api/off-plan');
+        if (!response.ok) throw new Error('Failed to fetch properties');
+        const data = await response.json();
+        console.log('Fetched properties:', data); // Debug log
+        
+        // Filter only published properties
+        const publishedProperties = data.filter((prop: any) => prop.status === 'published');
+        console.log('Published properties:', publishedProperties); // Debug log
+        
+        setProperties(publishedProperties);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        setProperties([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (properties.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mt-16 -mx-4 sm:-mx-6">
       <div className="overflow-hidden px-4 sm:px-6" ref={emblaRef}>
         <div className="flex gap-4 md:gap-8">
-          {properties.map((property, index) => (
+          {properties.map((property) => (
             <div 
               className="flex-[0_0_calc(100%-2rem)] md:flex-[0_0_calc(31%-1rem)]" 
-              key={index}
+              key={property._id}
             >
-              <PropertyCard {...property} />
+              <PropertyCard
+                image={property.mainImage}
+                name={property.title}
+                address={property.projectName}
+                developer={property.masterDeveloper}
+                price={property.price}
+                handoverDate={property.handoverDate}
+              />
             </div>
           ))}
         </div>
