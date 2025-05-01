@@ -29,6 +29,9 @@ declare module 'next-auth/jwt' {
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/real-estate';
 
+// Add MongoDB connection logging
+console.log('MongoDB URI:', MONGODB_URI);
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
@@ -48,16 +51,20 @@ export const authOptions: NextAuthOptions = {
         try {
           // Connect to MongoDB if not connected
           if (mongoose.connection.readyState !== 1) {
+            console.log('Attempting to connect to MongoDB...');
             await mongoose.connect(MONGODB_URI);
+            console.log('MongoDB connected successfully');
           }
 
           const user = await User.findOne({ email: credentials.email });
+          console.log('User found:', user ? 'yes' : 'no');
 
           if (!user) {
             throw new Error('Email does not exist');
           }
 
           const isPasswordValid = await user.comparePassword(credentials.password);
+          console.log('Password valid:', isPasswordValid);
 
           if (!isPasswordValid) {
             throw new Error('Invalid password');
@@ -70,7 +77,11 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error('Auth error:', error);
+          console.error('Auth error details:', error);
+          if (error instanceof Error) {
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+          }
           throw error;
         }
       },

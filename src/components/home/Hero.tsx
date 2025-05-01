@@ -68,12 +68,10 @@ const Hero = () => {
             {/* Second row - Header */}
             <div className="w-full max-w-3xl p-6 text-center">
               <h1 className="text-3xl md:text-[45px] font-bold text-white leading-tight">
-                Journey To Your Perfect<br />
-                Real Estate Deal
+              Ready to Begin Your <br/>Real Estate Journey?
               </h1>
               <p className="mt-4 text-sm text-white/80 max-w-2xl mx-auto">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
+              Partner with us to explore premium investment opportunities in the UAE's most sought-after developments. Like every successful partnership we've built, your journey with us will be defined by our commitment to excellence and a strong understanding of your investment goals.              </p>
             </div>
             {/* Third row - Search Filters */}
             <div className="w-full max-w-6xl">

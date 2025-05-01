@@ -52,20 +52,17 @@ const HomeForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left Column */}
           <div className="space-y-6">
-            <p className="text-sm text-white">Elite Destination Properties</p>
+            <p className="text-sm text-white">Elite Destination Property</p>
             <h2 className="text-5xl font-bold text-white">
-              Your Trusted<br />
-              Real Estate Partner
+            Building Lasting Partnerships
             </h2>
             <p className="text-gray-300 text-[14px]">
-              Fill out the form below, and our team will get back to you as
-              soon as possible. Whether you have inquiries about
-            </p>
+            Ready to explore premium opportunities? Get in touch today and we'll help you discover the perfect opportunities. Our team is ready to understand your goals and guide you through your next property investment.            </p>
           </div>
           
           {/* Right Column - Form */}
           <div className="bg-gray-800/80 p-6 rounded-lg">
-            <h3 className="text-white mb-6">Please share your details and a member of our team will be in touch</h3>
+            <h3 className="text-white text-sm mb-6">Fill out this form and a member of our team will be in touch to understand your investment vision and guide you through the possibilities ahead.</h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <input

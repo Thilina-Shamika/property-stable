@@ -91,7 +91,7 @@ export default function CommercialPropertyPage() {
   return (
     <main>
       <Header />
-      <div className="pt-8 pb-8">
+      <div className="pt-22 pb-8">
         <div className="container mx-auto px-4">
           <Link 
             href="/commercial"

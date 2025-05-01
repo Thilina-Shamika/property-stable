@@ -144,10 +144,10 @@ export default function BuyPropertyClient({ params }: PageParams) {
 
   return (
     <main>
-      <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-8 max-w-7xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 pt-22 pb-8 max-w-7xl mx-auto">
         <button 
           onClick={() => window.history.back()}
-          className="text-black hover:text-black flex items-center mb-6"
+          className="text-black cursor-pointer hover:text-black flex items-center mb-6"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

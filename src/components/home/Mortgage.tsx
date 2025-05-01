@@ -11,7 +11,7 @@ const Mortgage = () => {
           <div className="rounded-lg h-full">
             <h3 className="text-[14px] text-gray-900">Let's Find the Mortgage That Fits You Best</h3>
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mt-3">Finding your dream home should be a breeze, not a burden</h2>
-            <p className="text-sm text-gray-900 mt-4">Speak to our in-house mortgage team today and get access to the best rates in the market</p>
+            <p className="text-sm text-gray-900 mt-4">We know how important it is to get the right financing for your property investment. Our network of experienced mortgage advisors will work closely with you to find the most attractive rates and terms. Just like everything else we do, we keep it straightforward and focused on what matters to you. s</p>
             
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <Link href="/mortgage-calculator">
