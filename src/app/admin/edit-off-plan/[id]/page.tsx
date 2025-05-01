@@ -1,10 +1,11 @@
 import { Suspense } from 'react';
 import EditOffPlanForm from './EditOffPlanForm';
 
-interface PageProps {
+type PageProps = {
   params: {
     id: string;
   };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default function EditOffPlanPage({ params }: PageProps) {
