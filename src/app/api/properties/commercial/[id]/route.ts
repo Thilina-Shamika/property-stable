@@ -54,16 +54,12 @@ export async function PUT(
     // Process new images
     const newImagePaths = [];
     for (let i = 0; formData.get(`images[${i}]`); i++) {
-      const image = formData.get(`images[${i}]`) as File;
-      if (image) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const filename = `${Date.now()}-${image.name}`;
-        const filepath = path.join(uploadsDir, filename);
-        await writeFile(filepath, buffer);
-        newImagePaths.push(`/uploads/property/${filename}`);
+      const imageUrl = formData.get(`images[${i}]`);
+      if (imageUrl && typeof imageUrl === 'string') {
+        newImagePaths.push(imageUrl);
       }
     }
-    console.log('Processed new images');
+    console.log('Processed new images:', newImagePaths);
 
     // Process QR code
     let qrCodePath = '';
@@ -89,6 +85,7 @@ export async function PUT(
     // Prepare property data
     const propertyData = {
       propertyType: formData.get('propertyType'),
+      price: formData.get('price'),
       sqft: formData.get('sqft'),
       name: formData.get('name'),
       location: formData.get('location'),

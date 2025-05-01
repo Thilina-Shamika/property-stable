@@ -127,7 +127,7 @@ export default function AddCommercialPropertyPage() {
       
       // Append all form data
       Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
+        formDataToSend.append(key, value.toString());
       });
 
       // Append images
