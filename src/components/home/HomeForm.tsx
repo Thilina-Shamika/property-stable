@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import toast from 'react-hot-toast';
 
 const HomeForm = () => {
   const [formData, setFormData] = useState({
@@ -13,15 +14,56 @@ const HomeForm = () => {
     purpose: 'Buy',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
     name: 'United Arab Emirates',
     format: '50 123 4567'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          source: 'home'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+
+      toast.success('Thank you for your inquiry! Our team will contact you shortly.', {
+        duration: 5000,
+        position: 'top-center',
+        style: {
+          background: '#1b2734',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+          fontSize: '14px',
+        },
+      });
+      setFormData({
+        fullName: '',
+        phone: '',
+        email: '',
+        purpose: 'Buy',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePhoneChange = (value: string, country: any) => {
@@ -71,6 +113,7 @@ const HomeForm = () => {
                 className="w-full p-3 bg-[#1f2937] rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700"
                 value={formData.fullName}
                 onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                required
               />
               
               <div className="grid grid-cols-1 gap-1">
@@ -81,6 +124,7 @@ const HomeForm = () => {
                     onChange={handlePhoneChange}
                     inputProps={{
                       placeholder: '50 123 4567',
+                      required: true,
                     }}
                     containerClass="phone-input"
                     inputClass="!w-full !h-[50px] !pl-[130px] !bg-[#1f2937] !rounded !text-white !placeholder-gray-400 !border-0 focus:!outline-none focus:!ring-2 focus:!ring-gray-700 !text-[15px]"
@@ -101,12 +145,14 @@ const HomeForm = () => {
                 className="w-full p-3 bg-[#1f2937] rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
               />
 
               <select
                 className="w-full p-3 bg-[#1f2937] rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700 appearance-none"
                 value={formData.purpose}
                 onChange={(e) => setFormData({...formData, purpose: e.target.value})}
+                required
               >
                 <option value="Buy">Buy</option>
                 <option value="Commercial">Commercial</option>
@@ -119,13 +165,15 @@ const HomeForm = () => {
                 className="w-full p-3 bg-[#1f2937] rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700 resize-none"
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
+                required
               />
 
               <button
                 type="submit"
-                className="w-full bg-white text-gray-900 py-3 rounded font-medium hover:bg-gray-100 transition-colors"
+                disabled={isSubmitting}
+                className="w-full bg-white text-gray-900 py-3 rounded font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                SEND
+                {isSubmitting ? 'SENDING...' : 'SEND'}
               </button>
 
               <p className="text-xs text-gray-400 mt-4">
@@ -198,25 +246,6 @@ const HomeForm = () => {
           margin-top: 2px !important;
           width: 350px !important;
           max-height: 300px !important;
-          border: none !important;
-        }
-        .phone-input .country-list .country {
-          padding: 12px 15px !important;
-          display: flex !important;
-          align-items: center !important;
-          gap: 12px !important;
-        }
-        .phone-input .country-list .country .flag {
-          transform: scale(1.2);
-        }
-        .phone-input .country-list .country .dial-code {
-          color: #9ca3af !important;
-        }
-        .phone-input .country-list .country:hover {
-          background-color: #374151 !important;
-        }
-        .phone-input .country-list .country.highlight {
-          background-color: #374151 !important;
         }
       `}</style>
     </section>
