@@ -26,6 +26,7 @@ export default function ManageOffPlanPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<keyof OffPlanProperty>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [imageError, setImageError] = useState<{ [id: string]: boolean }>({});
 
   useEffect(() => {
     fetchProperties();
@@ -264,10 +265,11 @@ export default function ManageOffPlanPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="relative h-16 w-16">
                       <Image
-                        src={property.mainImage || '/images/placeholder.jpg'}
+                        src={imageError[property._id] ? '/images/placeholder.svg' : (property.mainImage || '/images/placeholder.jpg')}
                         alt={property.title}
                         fill
                         className="object-cover rounded"
+                        onError={() => setImageError(prev => ({ ...prev, [property._id]: true }))}
                       />
                     </div>
                   </td>

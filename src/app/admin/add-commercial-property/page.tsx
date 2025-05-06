@@ -103,38 +103,37 @@ export default function AddCommercialPropertyPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    if (images.length === 0) {
+      toast.error('At least one image is required');
+      return;
+    }
     try {
       setIsLoading(true);
 
-      // Upload images and QR code
-      const [imageUrls, qrCodeUrl] = await Promise.all([
-        uploadImages(),
-        uploadQrCode()
-      ]);
-
-      // Create FormData for the property
       const formDataToSend = new FormData();
       
       // Append all form data
       Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value.toString());
+        if (Array.isArray(value)) {
+          formDataToSend.append(key, JSON.stringify(value));
+        } else {
+          formDataToSend.append(key, value);
+        }
       });
 
-      // Append images
-      imageUrls.forEach((url: string, index: number) => {
-        formDataToSend.append(`images[${index}]`, url);
+      // Append images with the correct key format
+      images.forEach((image) => {
+        formDataToSend.append('images[]', image);
       });
 
       // Append QR code if exists
-      if (qrCodeUrl) {
-        formDataToSend.append('qrCode', qrCodeUrl);
+      if (qrCode) {
+        formDataToSend.append('qrCode', qrCode);
       }
 
-      // Send data to API
       const response = await fetch('/api/properties/commercial', {
         method: 'POST',
-        body: formDataToSend,
+        body: formDataToSend
       });
 
       if (!response.ok) {
@@ -321,13 +320,15 @@ export default function AddCommercialPropertyPage() {
                   </div>
                   {qrCode && (
                     <div className="mt-2 relative inline-block">
-                      <Image
-                        src={URL.createObjectURL(qrCode)}
-                        alt="QR Code"
-                        width={100}
-                        height={100}
-                        className="rounded-lg"
-                      />
+                      <div className="relative w-[100px] h-[100px]">
+                        <Image
+                          src={URL.createObjectURL(qrCode)}
+                          alt="QR Code"
+                          fill
+                          className="rounded-lg object-cover"
+                          unoptimized
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={removeQrCode}
@@ -356,13 +357,15 @@ export default function AddCommercialPropertyPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {images.map((image, index) => (
                     <div key={index} className="relative">
-                      <Image
-                        src={URL.createObjectURL(image)}
-                        alt={`Property image ${index + 1}`}
-                        width={200}
-                        height={200}
-                        className="rounded-lg object-cover"
-                      />
+                      <div className="relative w-[200px] h-[200px]">
+                        <Image
+                          src={URL.createObjectURL(image)}
+                          alt={`Property image ${index + 1}`}
+                          fill
+                          className="rounded-lg object-cover"
+                          unoptimized
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={() => removeImage(index)}

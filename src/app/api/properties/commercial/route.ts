@@ -61,8 +61,16 @@ export async function POST(request: Request) {
     });
 
     // Process QR code
-    const qrCodeUrl = formData.get('qrCode') as string;
-    console.log('QR code URL:', qrCodeUrl);
+    let qrCodePath = '';
+    const qrCode = formData.get('qrCode');
+    if (qrCode instanceof File) {
+      const buffer = Buffer.from(await qrCode.arrayBuffer());
+      const filename = `${Date.now()}-${qrCode.name}`;
+      const filepath = path.join(uploadsDir, filename);
+      await writeFile(filepath, buffer);
+      qrCodePath = `/uploads/${filename}`;
+    }
+    console.log('Processed QR code');
 
     // Prepare property data
     const propertyData = {
@@ -76,7 +84,7 @@ export async function POST(request: Request) {
       zoneName: formData.get('zoneName') || '',
       dldPermitNumber: formData.get('dldPermitNumber') || '',
       images: imageUrls,
-      qrCodeImage: qrCodeUrl || '',
+      qrCodeImage: qrCodePath || '',
       createdAt: new Date()
     };
 
