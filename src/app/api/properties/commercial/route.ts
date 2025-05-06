@@ -4,7 +4,6 @@ import { CommercialProperty } from '@/models/CommercialProperty';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import { join } from 'path';
 
 export async function POST(request: Request) {
   try {
@@ -16,61 +15,23 @@ export async function POST(request: Request) {
     console.log('Received form data:', Object.fromEntries(formData.entries()));
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
     await mkdir(uploadsDir, { recursive: true });
     console.log('Created uploads directory');
 
     // Process images
-    const imageFiles = formData.getAll('images[]') as File[];
-    console.log('Received images:', imageFiles.length);
-    
-    if (imageFiles.length === 0) {
-      return NextResponse.json(
-        { error: 'At least one image is required' },
-        { status: 400 }
-      );
+    const imagePaths = [];
+    for (let i = 0; formData.get(`images[${i}]`); i++) {
+      const imageUrl = formData.get(`images[${i}]`) as string;
+      if (imageUrl) {
+        imagePaths.push(imageUrl);
+      }
     }
-
-    const imageUrls = await Promise.all(
-      imageFiles.map(async (file) => {
-        if (!(file instanceof File)) {
-          throw new Error('Invalid file type');
-        }
-        
-        try {
-          const bytes = await file.arrayBuffer();
-          const buffer = Buffer.from(bytes);
-          const filename = `${Date.now()}-${file.name}`;
-          const filepath = join(uploadsDir, filename);
-          console.log('Saving image to:', filepath);
-          await writeFile(filepath, buffer);
-          const url = `/uploads/${filename}`;
-          console.log('Generated URL:', url);
-          return url;
-        } catch (error) {
-          console.error('Error processing image:', error);
-          throw new Error(`Failed to process image: ${file.name}`);
-        }
-      })
-    ).catch(error => {
-      console.error('Error processing images:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to process images' },
-        { status: 500 }
-      );
-    });
+    console.log('Processed images:', imagePaths);
 
     // Process QR code
-    let qrCodePath = '';
-    const qrCode = formData.get('qrCode');
-    if (qrCode instanceof File) {
-      const buffer = Buffer.from(await qrCode.arrayBuffer());
-      const filename = `${Date.now()}-${qrCode.name}`;
-      const filepath = path.join(uploadsDir, filename);
-      await writeFile(filepath, buffer);
-      qrCodePath = `/uploads/${filename}`;
-    }
-    console.log('Processed QR code');
+    const qrCodeUrl = formData.get('qrCode') as string;
+    console.log('QR code URL:', qrCodeUrl);
 
     // Prepare property data
     const propertyData = {
@@ -83,8 +44,8 @@ export async function POST(request: Request) {
       reference: formData.get('reference') || '',
       zoneName: formData.get('zoneName') || '',
       dldPermitNumber: formData.get('dldPermitNumber') || '',
-      images: imageUrls,
-      qrCodeImage: qrCodePath || '',
+      images: imagePaths,
+      qrCodeImage: qrCodeUrl || '',
       createdAt: new Date()
     };
 

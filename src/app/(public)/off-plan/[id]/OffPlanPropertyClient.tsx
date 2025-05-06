@@ -9,7 +9,6 @@ import "yet-another-react-lightbox/styles.css";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { E164Number } from 'libphonenumber-js/types';
-import { toast } from 'react-hot-toast';
 
 interface OffPlanProperty {
   _id: string;
@@ -83,51 +82,10 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
     return property.images.map(src => ({ src }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/property-inquiries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone,
-          projectName: formData.projectName,
-          propertyId: params.id,
-          propertyType: 'off-plan',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit inquiry');
-      }
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        projectName: ''
-      });
-      setPhone(undefined);
-      
-      toast.success(`Thank you for your interest in ${property?.title || 'this property'}! We will contact you shortly.`, {
-        duration: 5000,
-        style: {
-          background: '#333',
-          color: '#fff',
-          padding: '16px',
-          borderRadius: '8px',
-        },
-      });
-    } catch (error) {
-      console.error('Error submitting inquiry:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to register your interest. Please try again.');
-    }
+    // Handle form submission here
+    console.log({ ...formData, phone });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,7 +132,7 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
         <div className="mb-8">
           <Link 
             href="/off-plan"
-            className="text-[#393e46] hover:text-black flex items-center"
+            className="text-black hover:text-black flex items-center"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -218,7 +176,7 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="px-6 py-3 bg-[#393e46] text-white rounded-full hover:bg-gray-800 transition-colors text-center">
+                <button className="px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-center">
                   Register your interest
                 </button>
                 <button className="px-6 py-3 bg-white text-black border-2 border-black rounded-full hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
@@ -415,19 +373,19 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
               </p>
               <div className="grid grid-cols-3 gap-3">
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   Call
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   Email
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
@@ -496,7 +454,7 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors mt-6"
+                  className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors mt-6"
                 >
                   Submit Details
                 </button>

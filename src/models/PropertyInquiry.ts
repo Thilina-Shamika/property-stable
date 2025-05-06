@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
 
-// Delete the model if it exists to force recompilation
-if (mongoose.models.PropertyInquiry) {
-  delete mongoose.models.PropertyInquiry;
-}
-
 const propertyInquirySchema = new mongoose.Schema({
   name: {
     type: String,
@@ -28,7 +23,7 @@ const propertyInquirySchema = new mongoose.Schema({
   propertyType: {
     type: String,
     required: true,
-    enum: ['buy', 'rent', 'off-plan', 'commercial'],
+    enum: ['buy', 'rent', 'off-plan'],
   },
   createdAt: {
     type: Date,
@@ -36,4 +31,4 @@ const propertyInquirySchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('PropertyInquiry', propertyInquirySchema); 
+export default mongoose.models.PropertyInquiry || mongoose.model('PropertyInquiry', propertyInquirySchema); 

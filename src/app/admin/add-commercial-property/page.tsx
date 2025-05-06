@@ -75,65 +75,75 @@ export default function AddCommercialPropertyPage() {
     images.forEach(image => {
       formData.append('files', image);
     });
+    formData.append('type', 'property');
+    
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
+    
     if (!response.ok) {
       throw new Error('Failed to upload images');
     }
+    
     const data = await response.json();
     return data.urls;
   };
 
   const uploadQrCode = async () => {
     if (!qrCode) return null;
+
     const formData = new FormData();
     formData.append('files', qrCode);
+    formData.append('type', 'qrcode');
+    
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
+    
     if (!response.ok) {
       throw new Error('Failed to upload QR code');
     }
+    
     const data = await response.json();
     return data.urls[0];
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (images.length === 0) {
-      toast.error('At least one image is required');
-      return;
-    }
+    
     try {
       setIsLoading(true);
 
+      // Upload images and QR code
+      const [imageUrls, qrCodeUrl] = await Promise.all([
+        uploadImages(),
+        uploadQrCode()
+      ]);
+
+      // Create FormData for the property
       const formDataToSend = new FormData();
       
       // Append all form data
       Object.entries(formData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formDataToSend.append(key, JSON.stringify(value));
-        } else {
-          formDataToSend.append(key, value);
-        }
+        formDataToSend.append(key, value);
       });
 
-      // Append images with the correct key format
-      images.forEach((image) => {
-        formDataToSend.append('images[]', image);
+      // Append images
+      imageUrls.forEach((url: string, index: number) => {
+        formDataToSend.append(`images[${index}]`, url);
       });
 
       // Append QR code if exists
-      if (qrCode) {
-        formDataToSend.append('qrCode', qrCode);
+      if (qrCodeUrl) {
+        formDataToSend.append('qrCode', qrCodeUrl);
       }
 
+      // Send data to API
       const response = await fetch('/api/properties/commercial', {
         method: 'POST',
-        body: formDataToSend
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -320,15 +330,13 @@ export default function AddCommercialPropertyPage() {
                   </div>
                   {qrCode && (
                     <div className="mt-2 relative inline-block">
-                      <div className="relative w-[100px] h-[100px]">
-                        <Image
-                          src={URL.createObjectURL(qrCode)}
-                          alt="QR Code"
-                          fill
-                          className="rounded-lg object-cover"
-                          unoptimized
-                        />
-                      </div>
+                      <Image
+                        src={URL.createObjectURL(qrCode)}
+                        alt="QR Code"
+                        width={100}
+                        height={100}
+                        className="rounded-lg"
+                      />
                       <button
                         type="button"
                         onClick={removeQrCode}
@@ -357,15 +365,13 @@ export default function AddCommercialPropertyPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {images.map((image, index) => (
                     <div key={index} className="relative">
-                      <div className="relative w-[200px] h-[200px]">
-                        <Image
-                          src={URL.createObjectURL(image)}
-                          alt={`Property image ${index + 1}`}
-                          fill
-                          className="rounded-lg object-cover"
-                          unoptimized
-                        />
-                      </div>
+                      <Image
+                        src={URL.createObjectURL(image)}
+                        alt={`Property image ${index + 1}`}
+                        width={200}
+                        height={200}
+                        className="rounded-lg object-cover"
+                      />
                       <button
                         type="button"
                         onClick={() => removeImage(index)}

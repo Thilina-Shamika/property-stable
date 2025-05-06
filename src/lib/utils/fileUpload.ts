@@ -4,6 +4,7 @@ export async function uploadFiles(files: File[], type: 'property' | 'qrcode'): P
     files.forEach(file => {
       formData.append('files', file);
     });
+    formData.append('type', type);
 
     const response = await fetch('/api/upload', {
       method: 'POST',

@@ -129,30 +129,6 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
     setIsSubmitting(true);
 
     try {
-      let allImageUrls = [...existingImages]; // Start with existing images
-
-      // Upload new images if any
-      if (images.length > 0) {
-        const imageFormData = new FormData();
-        images.forEach(image => {
-          imageFormData.append('files', image);
-        });
-        imageFormData.append('type', 'property');
-        
-        const uploadResponse = await fetch('/api/upload', {
-          method: 'POST',
-          body: imageFormData,
-        });
-        
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload new images');
-        }
-        
-        const uploadData = await uploadResponse.json();
-        allImageUrls = [...allImageUrls, ...uploadData.urls];
-      }
-
-      // Create FormData for the property
       const formDataToSend = new FormData();
       
       // Append all form data
@@ -160,30 +136,24 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
         formDataToSend.append(key, value.toString());
       });
 
-      // Append all images (both existing and new)
-      allImageUrls.forEach((url, index) => {
-        formDataToSend.append(`images[${index}]`, url);
+      // Append new images
+      images.forEach((image, index) => {
+        formDataToSend.append(`images[${index}]`, image);
       });
 
-      // Handle QR code upload if new one is selected
+      // Append existing images
+      existingImages.forEach((image) => {
+        formDataToSend.append('existingImages[]', image);
+      });
+
+      // Append QR code if exists
       if (qrCode) {
-        const qrFormData = new FormData();
-        qrFormData.append('files', qrCode);
-        qrFormData.append('type', 'qrcode');
-        
-        const qrUploadResponse = await fetch('/api/upload', {
-          method: 'POST',
-          body: qrFormData,
-        });
-        
-        if (!qrUploadResponse.ok) {
-          throw new Error('Failed to upload QR code');
-        }
-        
-        const qrUploadData = await qrUploadResponse.json();
-        formDataToSend.append('qrCodeImage', qrUploadData.urls[0]);
-      } else if (existingQrCode) {
-        formDataToSend.append('qrCodeImage', existingQrCode);
+        formDataToSend.append('qrCode', qrCode);
+      }
+
+      // Append existing QR code if exists
+      if (existingQrCode) {
+        formDataToSend.append('existingQrCode', existingQrCode);
       }
 
       const response = await fetch(`/api/properties/commercial/${id}`, {
@@ -192,15 +162,14 @@ export default function EditCommercialPropertyPage({ params }: EditCommercialPro
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update property');
+        throw new Error('Failed to update property');
       }
 
       toast.success('Commercial property updated successfully');
       router.push('/admin/manage-commercial');
     } catch (error) {
       console.error('Error updating property:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to update property');
+      toast.error('Failed to update property');
     } finally {
       setIsSubmitting(false);
     }

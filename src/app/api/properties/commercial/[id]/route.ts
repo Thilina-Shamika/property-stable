@@ -47,19 +47,23 @@ export async function PUT(
     console.log('Received form data for update');
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
     await mkdir(uploadsDir, { recursive: true });
     console.log('Created uploads directory');
 
     // Process new images
     const newImagePaths = [];
     for (let i = 0; formData.get(`images[${i}]`); i++) {
-      const imageUrl = formData.get(`images[${i}]`);
-      if (imageUrl && typeof imageUrl === 'string') {
-        newImagePaths.push(imageUrl.replace('/uploads/property/', '/uploads/'));
+      const image = formData.get(`images[${i}]`) as File;
+      if (image) {
+        const buffer = Buffer.from(await image.arrayBuffer());
+        const filename = `${Date.now()}-${image.name}`;
+        const filepath = path.join(uploadsDir, filename);
+        await writeFile(filepath, buffer);
+        newImagePaths.push(`/uploads/property/${filename}`);
       }
     }
-    console.log('Processed new images:', newImagePaths);
+    console.log('Processed new images');
 
     // Process QR code
     let qrCodePath = '';
@@ -69,7 +73,7 @@ export async function PUT(
       const filename = `${Date.now()}-${qrCode.name}`;
       const filepath = path.join(uploadsDir, filename);
       await writeFile(filepath, buffer);
-      qrCodePath = `/uploads/${filename}`;
+      qrCodePath = `/uploads/property/${filename}`;
     }
     console.log('Processed QR code');
 
@@ -85,7 +89,6 @@ export async function PUT(
     // Prepare property data
     const propertyData = {
       propertyType: formData.get('propertyType'),
-      price: formData.get('price'),
       sqft: formData.get('sqft'),
       name: formData.get('name'),
       location: formData.get('location'),

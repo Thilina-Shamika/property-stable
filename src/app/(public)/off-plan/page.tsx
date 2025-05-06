@@ -25,30 +25,12 @@ export default function OffPlanPage() {
   const [filters, setFilters] = useState({
     type: 'all',
     location: 'all',
-    minPrice: '',
-    maxPrice: '',
+    minPrice: 'all',
+    maxPrice: 'all',
     beds: 'all'
   });
 
   useEffect(() => {
-    // Get URL parameters
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get('type');
-    const location = params.get('location');
-    const beds = params.get('beds');
-    const minPrice = params.get('minPrice');
-    const maxPrice = params.get('maxPrice');
-
-    // Update filters if parameters exist
-    setFilters(prev => ({
-      ...prev,
-      type: type || 'all',
-      location: location || 'all',
-      beds: beds || 'all',
-      minPrice: minPrice || '',
-      maxPrice: maxPrice || ''
-    }));
-
     fetchProperties();
   }, []);
 
@@ -89,10 +71,10 @@ export default function OffPlanPage() {
     }
 
     // Filter by price range
-    if (filters.minPrice !== '' && filters.minPrice !== 'all' || filters.maxPrice !== '' && filters.maxPrice !== 'all') {
+    if (filters.minPrice !== 'all' || filters.maxPrice !== 'all') {
       const price = parseInt(property.price.replace(/[^0-9]/g, ''));
-      const minPrice = filters.minPrice === '' || filters.minPrice === 'all' ? 0 : parseInt(filters.minPrice);
-      const maxPrice = filters.maxPrice === '' || filters.maxPrice === 'all' ? Infinity : parseInt(filters.maxPrice);
+      const minPrice = filters.minPrice === 'all' ? 0 : parseInt(filters.minPrice);
+      const maxPrice = filters.maxPrice === 'all' ? Infinity : parseInt(filters.maxPrice);
       
       if (price < minPrice || price > maxPrice) {
         return false;
@@ -167,26 +149,13 @@ export default function OffPlanPage() {
                 value={filters.minPrice}
                 onChange={(e) => handleFilterChange('minPrice', e.target.value)}
               >
-                <option value="">Min Price</option>
-                <option value="all">Show All</option>
+                <option value="all">Min Price</option>
+                <option value="0">0 AED</option>
                 <option value="1000000">1M AED</option>
                 <option value="2000000">2M AED</option>
                 <option value="3000000">3M AED</option>
                 <option value="4000000">4M AED</option>
                 <option value="5000000">5M AED</option>
-                <option value="6000000">6M AED</option>
-                <option value="7000000">7M AED</option>
-                <option value="8000000">8M AED</option>
-                <option value="9000000">9M AED</option>
-                <option value="10000000">10M AED</option>
-                <option value="20000000">20M AED</option>
-                <option value="25000000">25M AED</option>
-                <option value="30000000">30M AED</option>
-                <option value="40000000">40M AED</option>
-                <option value="50000000">50M AED</option>
-                <option value="60000000">60M AED</option>
-                <option value="70000000">70M AED</option>
-                <option value="80000000">80M AED</option>
               </select>
 
               <select 
@@ -194,26 +163,14 @@ export default function OffPlanPage() {
                 value={filters.maxPrice}
                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
               >
-                <option value="">Max Price</option>
-                <option value="all">Show All</option>
+                <option value="all">Max Price</option>
                 <option value="1000000">1M AED</option>
                 <option value="2000000">2M AED</option>
                 <option value="3000000">3M AED</option>
                 <option value="4000000">4M AED</option>
                 <option value="5000000">5M AED</option>
-                <option value="6000000">6M AED</option>
-                <option value="7000000">7M AED</option>
-                <option value="8000000">8M AED</option>
-                <option value="9000000">9M AED</option>
                 <option value="10000000">10M AED</option>
                 <option value="20000000">20M AED</option>
-                <option value="25000000">25M AED</option>
-                <option value="30000000">30M AED</option>
-                <option value="40000000">40M AED</option>
-                <option value="50000000">50M AED</option>
-                <option value="60000000">60M AED</option>
-                <option value="70000000">70M AED</option>
-                <option value="80000000">80M AED</option>
               </select>
 
               <select 
@@ -242,7 +199,7 @@ export default function OffPlanPage() {
             <div className="text-center py-12">
               <p className="text-gray-600 text-lg">No properties match your selected filters</p>
               <button 
-                onClick={() => setFilters({ type: 'all', location: 'all', minPrice: '', maxPrice: '', beds: 'all' })}
+                onClick={() => setFilters({ type: 'all', location: 'all', minPrice: 'all', maxPrice: 'all', beds: 'all' })}
                 className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Reset Filters
@@ -293,7 +250,7 @@ export default function OffPlanPage() {
                         </div>
                       </div>
 
-                      <button className="w-full mt-4 px-6 py-2.5 bg-[#393e46] text-white rounded-full hover:bg-gray-800 transition-colors">
+                      <button className="w-full mt-4 px-6 py-2.5 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors">
                         View Details
                       </button>
                     </div>

@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     console.log('Received form data');
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
     await mkdir(uploadsDir, { recursive: true });
     console.log('Created uploads directory');
 
@@ -62,11 +62,8 @@ export async function POST(request: Request) {
           const buffer = Buffer.from(bytes);
           const filename = `${Date.now()}-${file.name}`;
           const filepath = join(uploadsDir, filename);
-          console.log('Saving image to:', filepath);
           await writeFile(filepath, buffer);
-          const url = `/uploads/${filename}`;
-          console.log('Generated URL:', url);
-          return url;
+          return `/uploads/property/${filename}`;
         } catch (error) {
           console.error('Error processing image:', error);
           throw new Error(`Failed to process image: ${file.name}`);
@@ -92,7 +89,7 @@ export async function POST(request: Request) {
       const filename = `${Date.now()}-${qrCode.name}`;
       const filepath = path.join(uploadsDir, filename);
       await writeFile(filepath, buffer);
-      qrCodePath = `/uploads/${filename}`;
+      qrCodePath = `/uploads/property/${filename}`;
     }
     console.log('Processed QR code');
 

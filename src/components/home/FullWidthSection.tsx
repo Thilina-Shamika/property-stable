@@ -16,7 +16,7 @@ const FullWidthSection = () => {
         </div>
 
         {/* Right Column */}
-        <div className="h-full bg-[#393e46] py-30 px-12">
+        <div className="h-full bg-[#393e46] py-50 px-12">
           <h3 className="text-[14px] text-white">List your property with us</h3>
           <h2 className="text-4xl font-bold text-white mt-4 leading-tight">
           Unlock Your <br/>Property's Value

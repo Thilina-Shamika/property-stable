@@ -26,7 +26,6 @@ export default function ManageBuyPropertyPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<keyof BuyProperty>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [imageError, setImageError] = useState<{ [id: string]: boolean }>({});
 
   useEffect(() => {
     fetchProperties();
@@ -207,20 +206,19 @@ export default function ManageBuyPropertyPage() {
             {filteredAndSortedProperties.map((property) => (
               <tr key={property._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 border-b">
-                  {property.images && property.images[0] ? (
+                  {property.images && property.images[0] && (
                     <div className="relative w-16 h-16">
                       <Image
-                        src={imageError[property._id] ? '/images/placeholder.svg' : property.images[0]}
+                        src={property.images[0]}
                         alt={property.name}
                         width={64}
                         height={64}
                         className="object-cover rounded"
-                        onError={() => setImageError(prev => ({ ...prev, [property._id]: true }))}
+                        onError={(e) => {
+                          console.error('Error loading image:', property.images[0]);
+                          e.currentTarget.src = '/images/placeholder.svg';
+                        }}
                       />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
-                      <span className="text-gray-400 text-xs">No image</span>
                     </div>
                   )}
                 </td>

@@ -23,7 +23,7 @@ const PremiumProjects = () => {
           <div className="rounded-lg h-full flex flex-col justify-end">
             <div>
               <p className="text-gray-600 text-sm leading-relaxed">
-              You'll find our carefully chosen properties in the best locations across the UAE. Each home offers something special - from stunning designs to beautiful living spaces.               </p>
+              You'll find our carefully chosen properties in the best locations across the UAE. Each home offers something special - from stunning designs to beautiful living spaces. More than just properties, we create communities where life feels truly special, all taken care of by our dedicated team who's always there when you need them.              </p>
               <button className="mt-6 px-6 py-3 border border-gray-900 rounded-full text-gray-900 text-sm font-medium hover:bg-gray-900 hover:text-white transition-colors">
                 See All Premium Projects
               </button>

@@ -88,7 +88,7 @@ export default function BuyPropertyClient({ params }: PageParams) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/property-inquiries', {
+      const response = await fetch('/api/inquiries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ export default function BuyPropertyClient({ params }: PageParams) {
       <div className="px-4 sm:px-6 lg:px-8 pt-22 pb-8 max-w-7xl mx-auto">
         <button 
           onClick={() => window.history.back()}
-          className="text-[#393e46] cursor-pointer hover:text-black flex items-center mb-6"
+          className="text-black cursor-pointer hover:text-black flex items-center mb-6"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -413,19 +413,19 @@ export default function BuyPropertyClient({ params }: PageParams) {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-3">
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                   Call
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   Email
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
+                <button className="flex items-center justify-center gap-2 bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
@@ -439,7 +439,7 @@ export default function BuyPropertyClient({ params }: PageParams) {
               <h2 className="text-xl font-bold mb-4">Need a mortgage?</h2>
               <Link 
                 href="/mortgage-calculator"
-                className="w-full bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center text-sm"
+                className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center text-sm"
               >
                 Try Our Calculator
               </Link>
@@ -506,7 +506,7 @@ export default function BuyPropertyClient({ params }: PageParams) {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-[#393e46] text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors mt-6"
+                    className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors mt-6"
                   >
                     Submit Details
                   </button>

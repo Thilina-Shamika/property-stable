@@ -13,8 +13,8 @@ export default function BuyPage() {
   const [filters, setFilters] = useState({
     type: 'all',
     location: 'all',
-    minPrice: '',
-    maxPrice: '',
+    minPrice: 'all',
+    maxPrice: 'all',
     beds: 'all'
   });
 
@@ -33,8 +33,8 @@ export default function BuyPage() {
       type: type || 'all',
       location: location || 'all',
       beds: beds || 'all',
-      minPrice: minPrice || '',
-      maxPrice: maxPrice || ''
+      minPrice: minPrice || 'all',
+      maxPrice: maxPrice || 'all'
     }));
 
     fetchProperties();
@@ -79,10 +79,10 @@ export default function BuyPage() {
     }
 
     // Filter by price range
-    if (filters.minPrice !== '' && filters.minPrice !== 'all' || filters.maxPrice !== '' && filters.maxPrice !== 'all') {
+    if (filters.minPrice !== 'all' || filters.maxPrice !== 'all') {
       const price = parseInt(property.price.replace(/[^0-9]/g, ''));
-      const minPrice = filters.minPrice === '' || filters.minPrice === 'all' ? 0 : parseInt(filters.minPrice);
-      const maxPrice = filters.maxPrice === '' || filters.maxPrice === 'all' ? Infinity : parseInt(filters.maxPrice);
+      const minPrice = filters.minPrice === 'all' ? 0 : parseInt(filters.minPrice);
+      const maxPrice = filters.maxPrice === 'all' ? Infinity : parseInt(filters.maxPrice);
       
       if (price < minPrice || price > maxPrice) {
         return false;
@@ -179,26 +179,13 @@ export default function BuyPage() {
                 value={filters.minPrice}
                 onChange={(e) => handleFilterChange('minPrice', e.target.value)}
               >
-                <option value="">Min Price</option>
-                <option value="all">Show All</option>
+                <option value="all">Min Price</option>
+                <option value="0">0 AED</option>
                 <option value="1000000">1M AED</option>
                 <option value="2000000">2M AED</option>
                 <option value="3000000">3M AED</option>
                 <option value="4000000">4M AED</option>
                 <option value="5000000">5M AED</option>
-                <option value="6000000">6M AED</option>
-                <option value="7000000">7M AED</option>
-                <option value="8000000">8M AED</option>
-                <option value="9000000">9M AED</option>
-                <option value="10000000">10M AED</option>
-                <option value="20000000">20M AED</option>
-                <option value="25000000">25M AED</option>
-                <option value="30000000">30M AED</option>
-                <option value="40000000">40M AED</option>
-                <option value="50000000">50M AED</option>
-                <option value="60000000">60M AED</option>
-                <option value="70000000">70M AED</option>
-                <option value="80000000">80M AED</option>
               </select>
 
               <select 
@@ -206,26 +193,14 @@ export default function BuyPage() {
                 value={filters.maxPrice}
                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
               >
-                <option value="">Max Price</option>
-                <option value="all">Show All</option>
+                <option value="all">Max Price</option>
                 <option value="1000000">1M AED</option>
                 <option value="2000000">2M AED</option>
                 <option value="3000000">3M AED</option>
                 <option value="4000000">4M AED</option>
                 <option value="5000000">5M AED</option>
-                <option value="6000000">6M AED</option>
-                <option value="7000000">7M AED</option>
-                <option value="8000000">8M AED</option>
-                <option value="9000000">9M AED</option>
                 <option value="10000000">10M AED</option>
                 <option value="20000000">20M AED</option>
-                <option value="25000000">25M AED</option>
-                <option value="30000000">30M AED</option>
-                <option value="40000000">40M AED</option>
-                <option value="50000000">50M AED</option>
-                <option value="60000000">60M AED</option>
-                <option value="70000000">70M AED</option>
-                <option value="80000000">80M AED</option>
               </select>
 
               <select 
@@ -254,7 +229,7 @@ export default function BuyPage() {
             <div className="text-center py-12">
               <p className="text-gray-600 text-lg">No properties match your selected filters</p>
               <button 
-                onClick={() => setFilters({ type: 'all', location: 'all', minPrice: '', maxPrice: '', beds: 'all' })}
+                onClick={() => setFilters({ type: 'all', location: 'all', minPrice: 'all', maxPrice: 'all', beds: 'all' })}
                 className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Reset Filters
@@ -284,7 +259,7 @@ export default function BuyPage() {
                     {/* Content Container */}
                     <div className="p-4">
                       <h3 className="font-semibold text-lg text-gray-900 mb-1">
-                        {property.name}
+                        {property.beds} Bedrooms | Great Investment | {property.reference}
                       </h3>
                       <p className="text-sm text-gray-600 mb-3">{property.location}</p>
                       
@@ -293,7 +268,7 @@ export default function BuyPage() {
                         <p className="text-sm text-gray-500">Type: {property.propertyType}</p>
                       </div>
 
-                      <button className="w-full bg-[#393e46] text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors">
+                      <button className="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors">
                         View Details
                       </button>
                     </div>

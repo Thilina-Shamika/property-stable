@@ -77,9 +77,6 @@ importers:
       formidable:
         specifier: ^3.5.4
         version: 3.5.4
-      libphonenumber-js:
-        specifier: ^1.12.7
-        version: 1.12.7
       lucide-react:
         specifier: ^0.503.0
         version: 0.503.0(react@19.1.0)

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', type);
     try {
       await mkdir(uploadDir, { recursive: true });
     } catch (error) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         await writeFile(filepath, buffer);
 
         // Generate URL for the uploaded file
-        return `/uploads/${filename}`;
+        return `/uploads/${type}/${filename}`;
       })
     );
 

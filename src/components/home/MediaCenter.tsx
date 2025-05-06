@@ -10,7 +10,7 @@ const MediaCenter = () => {
           <div className="flex flex-col justify-center pr-[15px]">
             <div className="text-sm text-gray-600 mb-4">Media Center</div>
             <h2 className="text-4xl font-bold mb-6">
-              Elite Destination Property <br/>Media Center
+              Elite Destination Properties Media Center
             </h2>
             <p className="text-gray-600 mb-8">
               Discover our latest property showcases, market insights, and success stories right here. We're excited to share how we're helping investors like you find exceptional opportunities in the UAE's premium real estate market.
@@ -18,7 +18,7 @@ const MediaCenter = () => {
             <div>
               <Link 
                 href="/media-center" 
-                className="inline-block bg-[#393e46] text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                className="inline-block bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
               >
                 Visit Media Center
               </Link>

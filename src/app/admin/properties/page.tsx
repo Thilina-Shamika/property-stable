@@ -12,7 +12,6 @@ interface Property {
   propertyType: string;
   price: string;
   location: string;
-  images: string[];
 }
 
 interface Properties {
@@ -164,31 +163,12 @@ export default function PropertiesPage() {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Buy Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.buy.map((property: Property) => (
-            <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48 w-full">
-                {property.images && property.images[0] ? (
-                  <Image
-                    src={property.images[0]}
-                    alt={property.name}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/placeholder.svg';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No image available</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium text-lg mb-2">{property.name}</h3>
-                <p className="text-gray-600 mb-1">{property.propertyType}</p>
-                <p className="text-gray-600 mb-1">{property.location}</p>
-                <p className="text-gray-600 font-semibold">{property.price}</p>
-              </div>
+          {properties.buy.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
             </div>
           ))}
         </div>
@@ -198,31 +178,12 @@ export default function PropertiesPage() {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Rent Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.rent.map((property: Property) => (
-            <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48 w-full">
-                {property.images && property.images[0] ? (
-                  <Image
-                    src={property.images[0]}
-                    alt={property.name}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/placeholder.svg';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No image available</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium text-lg mb-2">{property.name}</h3>
-                <p className="text-gray-600 mb-1">{property.propertyType}</p>
-                <p className="text-gray-600 mb-1">{property.location}</p>
-                <p className="text-gray-600 font-semibold">{property.price}</p>
-              </div>
+          {properties.rent.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
             </div>
           ))}
         </div>
@@ -232,31 +193,12 @@ export default function PropertiesPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Commercial Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.commercial.map((property: Property) => (
-            <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="relative h-48 w-full">
-                {property.images && property.images[0] ? (
-                  <Image
-                    src={property.images[0]}
-                    alt={property.name}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/placeholder.svg';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No image available</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium text-lg mb-2">{property.name}</h3>
-                <p className="text-gray-600 mb-1">{property.propertyType}</p>
-                <p className="text-gray-600 mb-1">{property.location}</p>
-                <p className="text-gray-600 font-semibold">{property.price}</p>
-              </div>
+          {properties.commercial.map((property) => (
+            <div key={property._id} className="bg-white rounded-lg shadow p-4">
+              <h3 className="font-medium">{property.name}</h3>
+              <p className="text-gray-600">{property.propertyType}</p>
+              <p className="text-gray-600">{property.location}</p>
+              <p className="text-gray-600">{property.price}</p>
             </div>
           ))}
         </div>

@@ -1,25 +1,20 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/mongodb';
-import Inquiry from '@/models/Inquiry';
+import connectDB from '@/lib/db';
+import PropertyInquiry from '@/models/PropertyInquiry';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    await connectToDatabase();
-
-    const inquiry = await Inquiry.create({
-      ...body,
-      createdAt: new Date(),
-    });
-
+    await connectDB();
+    const data = await req.json();
+    
+    const inquiry = new PropertyInquiry(data);
+    await inquiry.save();
+    
+    return NextResponse.json({ success: true, data: inquiry });
+  } catch (error) {
+    console.error('Error saving property inquiry:', error);
     return NextResponse.json(
-      { message: 'Inquiry submitted successfully', inquiry },
-      { status: 201 }
-    );
-  } catch (error: any) {
-    console.error('Error submitting inquiry:', error);
-    return NextResponse.json(
-      { message: 'Failed to submit inquiry', error: error.message },
+      { error: 'Failed to save property inquiry' },
       { status: 500 }
     );
   }
@@ -27,13 +22,15 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const inquiries = await Inquiry.find().sort({ createdAt: -1 });
+    await connectDB();
+    const inquiries = await PropertyInquiry.find()
+      .sort({ createdAt: -1 })
+      .lean();
     return NextResponse.json(inquiries);
-  } catch (error: any) {
-    console.error('Error fetching inquiries:', error);
+  } catch (error) {
+    console.error('Error fetching property inquiries:', error);
     return NextResponse.json(
-      { message: 'Failed to fetch inquiries', error: error.message },
+      { error: 'Failed to fetch property inquiries' },
       { status: 500 }
     );
   }

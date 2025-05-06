@@ -89,23 +89,23 @@ const Footer = () => {
               <div className="flex items-start gap-3 text-gray-300">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div className="text-sm">
-                Office 608, <br/>
-                Al Jawhara Building, <br/>
-                Bank Street, Al Mankhool, <br/>
-                Bur Dubai
+                  address line 01,<br />
+                  address line 02,<br />
+                  city,<br />
+                  country
                 </div>
               </div>
               <div className="flex items-center gap-3 text-gray-300">
                 <Phone className="w-5 h-5 flex-shrink-0" />
                 <div className="text-sm">
-                  <div>+971 58 680 0956</div>
-                  <div>+971 52 599 9948</div>
+                  <div>000 000 0000</div>
+                  <div>000 000 0000</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-gray-300">
                 <Mail className="w-5 h-5 flex-shrink-0" />
                 <div className="text-sm">
-                  info@edproperties.ae
+                  info@example.com
                 </div>
               </div>
             </div>
@@ -113,23 +113,24 @@ const Footer = () => {
           <div className="col-span-1">
             <h4 className="text-white text-sm font-medium uppercase mb-4">ABOUT ED PROPERTY</h4>
             <nav className="space-y-2">
-              <Link href="/about-us" className="block text-sm text-gray-300 hover:text-white transition-colors">
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
                 Who We Are
               </Link>
-              <Link href="/contact" className="block text-sm text-gray-300 hover:text-white transition-colors">
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
                 Contact Us
               </Link>
-              
-              <Link href="/careers" className="block text-sm text-gray-300 hover:text-white transition-colors">
-                Careers
-              </Link>
-              <Link href="/media-center" className="block text-sm text-gray-300 hover:text-white transition-colors">
-                Blogs
-              </Link>
-              <Link href="/faq" className="block text-sm text-gray-300 hover:text-white transition-colors">
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
                 FAQ
               </Link>
-              
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
+                Careers
+              </Link>
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
+                Blogs
+              </Link>
+              <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
+                Media Center
+              </Link>
             </nav>
           </div>
           <div className="col-span-1">
@@ -153,7 +154,9 @@ const Footer = () => {
               <Link href="#" className="block text-sm text-gray-300 hover:text-white transition-colors">
                 Schedule a Meeting
               </Link>
-             
+              <Link href="/contact" className="block text-sm text-gray-300 hover:text-white transition-colors">
+                Contact Us
+              </Link>
             </nav>
             
           </div>
@@ -203,7 +206,7 @@ const Footer = () => {
         {/* Third Row - Copyright */}
         <div className="border-t border-gray-700 text-center">
           <div className="text-xs text-gray-400">
-            All rights reserved @ ED Property | Web Site Designed by{' '}
+            All rights reserved @ ED Properties | Web Site Designed by{' '}
             <a 
               href="https://www.digixplanet.com" 
               target="_blank" 
