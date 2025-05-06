@@ -284,7 +284,7 @@ export default function BuyPage() {
                     {/* Content Container */}
                     <div className="p-4">
                       <h3 className="font-semibold text-lg text-gray-900 mb-1">
-                        {property.beds} Bedrooms | Great Investment | {property.reference}
+                        {property.name}
                       </h3>
                       <p className="text-sm text-gray-600 mb-3">{property.location}</p>
                       
