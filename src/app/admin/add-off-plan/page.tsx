@@ -2,178 +2,188 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ImageUpload } from '@/components/ui/ImageUpload';
-import { uploadFiles } from '@/lib/utils/fileUpload';
-import { z } from "zod";
-import { offPlanFormSchema } from "@/lib/validations/offPlanSchema";
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
+import { useDropzone } from 'react-dropzone';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
-type OffPlanFormData = z.infer<typeof offPlanFormSchema>;
+const propertyTypes = [
+  'Apartment',
+  'Villa',
+  'Townhouse',
+  'Penthouse',
+  'Duplex',
+  'Studio',
+  'Loft'
+];
 
-interface FormData {
-  title: string;
+const indoorAmenities = [
+  'Air Conditioning/Heating',
+  'Fitness Center/Gym',
+  'Sauna/Steam Room',
+  'Library/Reading Room',
+  'Conference Room',
+  'Children\'s Playroom',
+  'Parking Garage (Indoor)',
+  'Walk-in Closets'
+];
+
+const outdoorAmenities = [
+  'Garden or Landscaping',
+  'Hot Tub/Jacuzzi',
+  'Tennis Court',
+  'Bike Racks',
+  'Picnic Area'
+];
+
+const furnishingOptions = [
+  'Fully Furnished',
+  'Furnished',
+  'Not Furnished'
+];
+
+type FormDataType = {
   propertyType: string;
-  beds: number;
   price: string;
-  priceRange: {
-    min: number;
-    max: number;
-  };
-  paymentPlan: {
-    downPayment: number;
-    installment1: string;
-    installment2: string;
-  };
-  completionDate: string;
-  handoverDate: string;
-  description: string;
-  developer: {
-    name: string;
-  };
+  name: string;
   location: string;
-  projectNumber: string;
+  beds: string;
+  baths: string;
+  sqft: string;
+  description: string;
+  indoorAmenities: string[];
+  outdoorAmenities: string[];
+  furnishing: string;
+  reference: string;
+  zoneName: string;
   dldPermitNumber: string;
-  mainImage: string;
-  images: string[];
-  qrCode?: string;
-}
+  handoverDate: string;
+  developer: { name: string };
+  title: string;
+  projectNumber: string;
+  installment1: string;
+  installment2: string;
+  [key: string]: any; // allow string indexing for dynamic/nested fields
+};
 
 export default function AddOffPlanPage() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    title: '',
+  const [isLoading, setIsLoading] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
+  const [qrCode, setQrCode] = useState<File | null>(null);
+  const [formData, setFormData] = useState<FormDataType>({
     propertyType: '',
-    beds: 0,
     price: '',
-    priceRange: {
-      min: 0,
-      max: 0
-    },
-    paymentPlan: {
-      downPayment: 0,
-      installment1: '',
-      installment2: ''
-    },
-    completionDate: '',
-    handoverDate: '',
-    description: '',
-    developer: {
-      name: ''
-    },
+    name: '',
     location: '',
-    projectNumber: '',
+    beds: '',
+    baths: '',
+    sqft: '',
+    description: '',
+    indoorAmenities: [],
+    outdoorAmenities: [],
+    furnishing: '',
+    reference: '',
+    zoneName: '',
     dldPermitNumber: '',
-    mainImage: '',
-    images: []
+    handoverDate: '',
+    developer: { name: '' },
+    title: '',
+    projectNumber: '',
+    installment1: '',
+    installment2: ''
   });
 
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [qrCodeFile, setQRCodeFile] = useState<File | null>(null);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+    },
+    onDrop: (acceptedFiles) => {
+      setImages(prev => [...prev, ...acceptedFiles]);
+    }
+  });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const { getRootProps: getQrRootProps, getInputProps: getQrInputProps } = useDropzone({
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+    },
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      setQrCode(acceptedFiles[0]);
+    }
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      setFormData((prev: FormData) => ({
+      setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...(prev[parent as keyof FormData] as Record<string, unknown>),
-          [child]: value,
-        },
+          ...prev[parent],
+          [child]: value
+        }
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: name === 'beds' ? parseInt(value) || 0 : value,
+        [name]: value
       }));
     }
   };
 
-  const handleImageChange = (files: File[]) => {
-    setImageFiles(prev => [...prev, ...files]);
-  };
-
-  const handleQRCodeChange = (files: File[]) => {
-    if (files.length > 0) {
-      setQRCodeFile(files[0]);
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, category: 'indoorAmenities' | 'outdoorAmenities') => {
+    const { value, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [category]: checked
+        ? [...prev[category], value]
+        : prev[category].filter(item => item !== value)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsLoading(true);
 
     try {
-      // Upload images first
-      let imageUrls: string[] = [];
-      if (imageFiles.length > 0) {
-        try {
-          imageUrls = await uploadFiles(imageFiles, 'property');
-          console.log('Images uploaded successfully:', imageUrls);
-        } catch (error) {
-          console.error('Error uploading images:', error);
-          throw new Error('Failed to upload images');
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'developer') {
+          formDataToSend.append('developer', value.name); // flatten developer
+        } else if (Array.isArray(value)) {
+          formDataToSend.append(key, JSON.stringify(value));
+        } else if (typeof value === 'object' && value !== null) {
+          formDataToSend.append(key, JSON.stringify(value));
+        } else {
+          formDataToSend.append(key, value);
         }
+      });
+      images.forEach((image) => {
+        formDataToSend.append('images[]', image);
+      });
+      if (qrCode) {
+        formDataToSend.append('qrCode', qrCode);
       }
-
-      // Upload QR code if exists
-      let qrCodeUrl = '';
-      if (qrCodeFile) {
-        try {
-          const [uploadedQrCode] = await uploadFiles([qrCodeFile], 'qrcode');
-          qrCodeUrl = uploadedQrCode;
-          console.log('QR code uploaded successfully:', qrCodeUrl);
-        } catch (error) {
-          console.error('Error uploading QR code:', error);
-          throw new Error('Failed to upload QR code');
-        }
-      }
-
-      // Prepare the final data
-      const finalData = {
-        ...formData,
-        mainImage: imageUrls[0] || '',  // Set first image as main image
-        images: imageUrls,
-        qrCode: qrCodeUrl,
-      };
-
-      console.log('Submitting form data:', finalData);
-
-      // Send to API
       const response = await fetch('/api/off-plan', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finalData),
+        body: formDataToSend
       });
-
-      const responseData = await response.json();
-
       if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to create property');
+        throw new Error('Failed to create property');
       }
-
-      console.log('Property created successfully:', responseData);
-
-      // Show success message
-      alert('Property created successfully!');
-
-      // Redirect to manage off-plan page
+      toast.success('Property created successfully');
       router.push('/admin/manage-off-plan');
-      router.refresh();
     } catch (error) {
-      console.error('Error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create property');
+      console.error('Error creating property:', error);
+      toast.error('Failed to create property');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -197,13 +207,9 @@ export default function AddOffPlanPage() {
                 required
               >
                 <option value="">Select Property Type</option>
-                <option value="Apartment">Apartment</option>
-                <option value="Villa">Villa</option>
-                <option value="Townhouse">Townhouse</option>
-                <option value="Penthouse">Penthouse</option>
-                <option value="Duplex">Duplex</option>
-                <option value="Plot">Plot</option>
-                <option value="Land">Land</option>
+                {propertyTypes.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
 
@@ -241,8 +247,8 @@ export default function AddOffPlanPage() {
               </label>
               <input
                 type="text"
-                name="paymentPlan.installment1"
-                value={formData.paymentPlan.installment1}
+                name="installment1"
+                value={formData.installment1 || ''}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
               />
@@ -254,8 +260,8 @@ export default function AddOffPlanPage() {
               </label>
               <input
                 type="text"
-                name="paymentPlan.installment2"
-                value={formData.paymentPlan.installment2}
+                name="installment2"
+                value={formData.installment2 || ''}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
               />
@@ -378,33 +384,79 @@ export default function AddOffPlanPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               QR Code
             </label>
-            <ImageUpload
-              onImageChange={handleQRCodeChange}
-              maxImages={1}
-              existingImages={formData.qrCode ? [formData.qrCode] : []}
-            />
+            <div
+              {...getQrRootProps()}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400"
+            >
+              <input {...getQrInputProps()} />
+              {qrCode ? (
+                <div className="relative">
+                  <Image
+                    src={URL.createObjectURL(qrCode)}
+                    alt="QR Code"
+                    width={100}
+                    height={100}
+                    className="mx-auto"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setQrCode(null)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Drag and drop QR code image here, or click to select</p>
+              )}
+            </div>
           </div>
         </section>
 
         {/* Property Images */}
         <section className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Property Images</h2>
-          <ImageUpload
-            onImageChange={handleImageChange}
-            maxImages={10}
-            existingImages={formData.images}
-            onRemoveImage={handleRemoveImage}
-          />
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-900">Property Images</h2>
+            <div
+              {...getRootProps()}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400"
+            >
+              <input {...getInputProps()} />
+              <p className="text-sm text-gray-500">Drag and drop property images here, or click to select</p>
+            </div>
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {images.map((image, index) => (
+                  <div key={index} className="relative">
+                    <Image
+                      src={URL.createObjectURL(image)}
+                      alt={`Property image ${index + 1}`}
+                      width={200}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                    >
+                      <XMarkIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isLoading}
             className="bg-primary text-white px-6 py-2 rounded-lg transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
-            {isSubmitting ? 'Adding Property...' : 'Add Property'}
+            {isLoading ? 'Adding Property...' : 'Add Property'}
           </button>
         </div>
       </form>

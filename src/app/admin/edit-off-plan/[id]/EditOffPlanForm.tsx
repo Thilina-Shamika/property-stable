@@ -15,11 +15,8 @@ interface FormData {
   propertyType: string;
   beds: string;
   price: string;
-  paymentPlan: {
-    downPayment: number;
-    installment1: string;
-    installment2: string;
-  };
+  installment1: string;
+  installment2: string;
   handoverDate: string;
   description: string;
   developer: string;
@@ -42,6 +39,9 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [qrCode, setQrCode] = useState<File | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [existingQrCode, setExistingQrCode] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -65,8 +65,14 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
       }
       
       const data = await response.json();
-      setFormData(data);
+      setFormData({
+        ...data,
+        installment1: data.paymentPlan?.installment1 || '',
+        installment2: data.paymentPlan?.installment2 || '',
+      });
       setImagePreview(data.mainImage || '');
+      setExistingImages(data.images);
+      setExistingQrCode(data.qrCode || null);
     } catch (error) {
       console.error('Error fetching property:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch property');
@@ -77,32 +83,14 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (!formData) return;
-
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => {
-        if (!prev) return prev;
-        if (parent === 'paymentPlan') {
-          return {
-            ...prev,
-            paymentPlan: {
-              ...prev.paymentPlan,
-              [child]: value
-            }
-          };
-        }
-        return prev;
-      });
-    } else {
-      setFormData(prev => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          [name]: value
-        };
-      });
-    }
+    setFormData(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [name]: value
+      };
+    });
   };
 
   const handleImageUpload = (files: File[]) => {
@@ -112,49 +100,57 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
     }
   };
 
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeQrCode = () => {
+    setQrCode(null);
+  };
+
+  const removeExistingQrCode = () => {
+    setExistingQrCode(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData) return;
-
     try {
       setIsSubmitting(true);
       setError(null);
-
-      // Upload new images if any
-      let updatedImages = formData.images;
-      if (imageFiles.length > 0) {
-        try {
-          const uploadedImages = await uploadFiles(imageFiles, 'property');
-          updatedImages = [...formData.images, ...uploadedImages];
-        } catch (error) {
-          console.error('Error uploading images:', error);
-          throw new Error('Failed to upload images');
-        }
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'images' || key === 'mainImage' || key === 'qrCode') return; // handled below
+        formDataToSend.append(key, value || '');
+      });
+      // Images
+      imageFiles.forEach((image) => {
+        formDataToSend.append('images[]', image);
+      });
+      // Existing images (if any)
+      existingImages.forEach((img) => {
+        formDataToSend.append('existingImages[]', img);
+      });
+      // QR code
+      if (qrCode) {
+        formDataToSend.append('qrCode', qrCode);
       }
-
-      // Prepare the final data
-      const finalData = {
-        ...formData,
-        images: updatedImages,
-      };
-
-      console.log('Submitting data:', finalData);
-
+      // Existing QR code (if any)
+      if (existingQrCode) {
+        formDataToSend.append('existingQrCode', existingQrCode);
+      }
       const response = await fetch(`/api/off-plan/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finalData),
+        body: formDataToSend
       });
-      
       const responseData = await response.json();
-      console.log('Response:', responseData);
-
       if (!response.ok) {
         throw new Error(responseData.error || 'Failed to update property');
       }
-
       router.push('/admin/manage-off-plan');
     } catch (error) {
       console.error('Error updating property:', error);
@@ -249,8 +245,8 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
               </label>
               <input
                 type="text"
-                name="paymentPlan.installment1"
-                value={formData.paymentPlan.installment1}
+                name="installment1"
+                value={formData.installment1}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
               />
@@ -262,8 +258,8 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
               </label>
               <input
                 type="text"
-                name="paymentPlan.installment2"
-                value={formData.paymentPlan.installment2}
+                name="installment2"
+                value={formData.installment2}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded focus:ring-2 focus:ring-primary"
               />
@@ -400,7 +396,8 @@ export default function EditOffPlanForm({ id }: EditOffPlanFormProps) {
           <ImageUpload
             onImageChange={handleImageUpload}
             maxImages={10}
-            existingImages={formData.images}
+            existingImages={existingImages}
+            onRemoveImage={(index) => setExistingImages(prev => prev.filter((_, i) => i !== index))}
           />
           {imagePreview && (
             <div className="mt-2 relative h-40 w-full">

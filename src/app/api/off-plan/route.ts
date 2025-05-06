@@ -1,22 +1,80 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { OffPlanProperty } from '@/models/OffPlanProperty';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import { mkdir } from 'fs/promises';
 
 export async function POST(request: Request) {
   try {
-    // Connect to database
     await connectDB();
+    const formData = await request.formData();
 
-    // Parse the request body
-    const data = await request.json();
-    
-    // Log the received data
-    console.log('Received data:', data);
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
+    await mkdir(uploadsDir, { recursive: true });
+
+    // Process images
+    const imageFiles = formData.getAll('images[]') as File[];
+    if (imageFiles.length === 0) {
+      return NextResponse.json(
+        { error: 'At least one image is required' },
+        { status: 400 }
+      );
+    }
+    const imageUrls = await Promise.all(
+      imageFiles.map(async (file) => {
+        if (!(file instanceof File)) {
+          throw new Error('Invalid file type');
+        }
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const filename = `${Date.now()}-${file.name}`;
+        const filepath = path.join(uploadsDir, filename);
+        await writeFile(filepath, buffer);
+        return `/uploads/property/${filename}`;
+      })
+    );
+
+    // Process QR code
+    let qrCodePath = '';
+    const qrCode = formData.get('qrCode');
+    if (qrCode instanceof File) {
+      const buffer = Buffer.from(await qrCode.arrayBuffer());
+      const filename = `${Date.now()}-${qrCode.name}`;
+      const filepath = path.join(uploadsDir, filename);
+      await writeFile(filepath, buffer);
+      qrCodePath = `/uploads/property/${filename}`;
+    }
+
+    // Prepare property data
+    const propertyData: Record<string, any> = {
+      title: formData.get('title') || '',
+      propertyType: formData.get('propertyType') || 'Apartment',
+      beds: formData.get('beds') || '',
+      price: formData.get('price') || '',
+      priceRange: { min: 0, max: 0 },
+      paymentPlan: {
+        downPayment: 0,
+        installment1: formData.get('installment1') || '',
+        installment2: formData.get('installment2') || ''
+      },
+      completionDate: formData.get('completionDate') || '',
+      handoverDate: formData.get('handoverDate') || '',
+      description: formData.get('description') || '',
+      developer: formData.get('developer') || '',
+      location: formData.get('location') || '',
+      projectNumber: formData.get('projectNumber') || '',
+      dldPermitNumber: formData.get('dldPermitNumber') || '',
+      mainImage: imageUrls[0] || '',
+      qrCode: qrCodePath,
+      images: imageUrls,
+      status: 'draft',
+    };
 
     // Validate required fields
     const requiredFields = ['title', 'propertyType', 'beds', 'price', 'description', 'handoverDate', 'developer', 'location', 'projectNumber'];
-    const missingFields = requiredFields.filter(field => !data[field]);
-    
+    const missingFields = requiredFields.filter(field => !propertyData[field]);
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(', ')}` },
@@ -24,43 +82,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Prepare the property data
-    const propertyData = {
-      title: data.title || '',
-      propertyType: data.propertyType || 'Apartment',
-      beds: data.beds || '',
-      price: data.price || '',
-      priceRange: {
-        min: 0,
-        max: 0
-      },
-      paymentPlan: {
-        downPayment: 0,
-        installment1: data.paymentPlan?.installment1 || '',
-        installment2: data.paymentPlan?.installment2 || ''
-      },
-      completionDate: '',
-      handoverDate: data.handoverDate || '',
-      description: data.description || '',
-      developer: data.developer?.name || '',
-      location: data.location || '',
-      projectNumber: data.projectNumber || '',
-      dldPermitNumber: data.dldPermitNumber || '',
-      mainImage: data.images?.[0] || '',
-      qrCode: data.qrCode || '',
-      images: data.images || [],
-      status: 'draft'
-    };
-
-    console.log('Prepared property data:', propertyData);
-
-    // Create new property
+    // Create and save property
     const property = new OffPlanProperty(propertyData);
-
-    // Save the property
     const savedProperty = await property.save();
-    console.log('Property saved successfully:', savedProperty);
-
     return NextResponse.json(savedProperty, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/off-plan:', error);
@@ -74,24 +98,12 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     await connectDB();
-    console.log('Connected to database successfully');
-
     const { searchParams } = new URL(request.url);
     const showAll = searchParams.get('showAll') === 'true';
-    console.log('Fetching properties with showAll:', showAll);
-
     const query = showAll ? {} : { status: 'published' };
     const properties = await OffPlanProperty.find(query)
       .sort({ createdAt: -1 })
       .lean();
-    
-    console.log('Number of properties found:', properties.length);
-    console.log('First property sample:', properties[0] ? {
-      title: properties[0].title,
-      status: properties[0].status,
-      mainImage: properties[0].mainImage
-    } : 'No properties found');
-
     return NextResponse.json(properties);
   } catch (error) {
     console.error('Error fetching off-plan properties:', error);
