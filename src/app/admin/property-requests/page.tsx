@@ -26,15 +26,15 @@ export default function PropertyRequestsPage() {
 
   const fetchInquiries = async () => {
     try {
-      const response = await fetch('/api/inquiries');
+      const response = await fetch('/api/property-inquiries');
       if (!response.ok) {
-        throw new Error('Failed to fetch inquiries');
+        throw new Error('Failed to fetch property inquiries');
       }
       const data = await response.json();
       setInquiries(data);
     } catch (error) {
-      console.error('Error fetching inquiries:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch inquiries');
+      console.error('Error fetching property inquiries:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch property inquiries');
     } finally {
       setLoading(false);
     }

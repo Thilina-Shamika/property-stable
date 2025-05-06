@@ -84,7 +84,7 @@ export default function CommercialPropertyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/inquiries', {
+      const response = await fetch('/api/property-inquiries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

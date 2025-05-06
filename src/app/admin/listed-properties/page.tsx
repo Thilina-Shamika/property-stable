@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { parsePhoneNumber } from 'libphonenumber-js';
 
 interface Valuation {
   _id: string;
@@ -17,6 +18,23 @@ export default function ListedPropertiesPage() {
   const [valuations, setValuations] = useState<Valuation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const formatPhoneNumber = (phoneNumber: string) => {
+    try {
+      const parsedNumber = parsePhoneNumber(phoneNumber);
+      if (parsedNumber) {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-sm">{parsedNumber.countryCallingCode}</span>
+            <span className="text-sm">{parsedNumber.nationalNumber}</span>
+          </div>
+        );
+      }
+    } catch (error) {
+      console.error('Error parsing phone number:', error);
+    }
+    return phoneNumber;
+  };
 
   useEffect(() => {
     fetchValuations();
@@ -96,7 +114,7 @@ export default function ListedPropertiesPage() {
                 </td>
                 <td className="px-6 py-4 border-b">{valuation.name}</td>
                 <td className="px-6 py-4 border-b">{valuation.email}</td>
-                <td className="px-6 py-4 border-b">{valuation.mobile}</td>
+                <td className="px-6 py-4 border-b">{formatPhoneNumber(valuation.mobile)}</td>
                 <td className="px-6 py-4 border-b">{valuation.listingType}</td>
                 <td className="px-6 py-4 border-b">{valuation.propertyAddress}</td>
               </tr>
