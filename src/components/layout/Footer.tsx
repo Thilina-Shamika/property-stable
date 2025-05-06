@@ -89,10 +89,10 @@ const Footer = () => {
               <div className="flex items-start gap-3 text-gray-300">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div className="text-sm">
-                  address line 01,<br />
-                  address line 02,<br />
-                  city,<br />
-                  country
+                Office 608, <br/>
+                Al Jawhara Building, <br/>
+                Bank Street, Al Mankhool, <br/>
+                Bur Dubai
                 </div>
               </div>
               <div className="flex items-center gap-3 text-gray-300">

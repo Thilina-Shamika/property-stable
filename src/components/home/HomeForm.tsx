@@ -171,7 +171,7 @@ const HomeForm = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-white text-gray-900 py-3 rounded font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-white text-gray-900 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'SENDING...' : 'SEND'}
               </button>

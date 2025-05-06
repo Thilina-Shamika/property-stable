@@ -86,7 +86,7 @@ const Header = () => {
               </Link>
               <Link 
                 href="/contact" 
-                className="bg-white text-[#1b2734] px-4 py-2 rounded text-sm font-medium hover:bg-white/90 transition-colors"
+                className="bg-white rounded-full text-[#1b2734] px-4 py-2 text-sm font-medium hover:bg-white/90 transition-colors"
               >
                 CONTACT US
               </Link>
