@@ -164,7 +164,7 @@ export default function PropertiesPage() {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Buy Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.buy.map((property) => (
+          {properties.buy.map((property: Property) => (
             <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
               <div className="relative h-48 w-full">
                 {property.images && property.images[0] ? (
@@ -174,7 +174,6 @@ export default function PropertiesPage() {
                     fill
                     className="object-cover"
                     onError={(e) => {
-                      console.error('Error loading image:', property.images[0]);
                       e.currentTarget.src = '/images/placeholder.svg';
                     }}
                   />
@@ -199,7 +198,7 @@ export default function PropertiesPage() {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Rent Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.rent.map((property) => (
+          {properties.rent.map((property: Property) => (
             <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
               <div className="relative h-48 w-full">
                 {property.images && property.images[0] ? (
@@ -209,7 +208,6 @@ export default function PropertiesPage() {
                     fill
                     className="object-cover"
                     onError={(e) => {
-                      console.error('Error loading image:', property.images[0]);
                       e.currentTarget.src = '/images/placeholder.svg';
                     }}
                   />
@@ -234,7 +232,7 @@ export default function PropertiesPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Commercial Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.commercial.map((property) => (
+          {properties.commercial.map((property: Property) => (
             <div key={property._id} className="bg-white rounded-lg shadow overflow-hidden">
               <div className="relative h-48 w-full">
                 {property.images && property.images[0] ? (
@@ -244,7 +242,6 @@ export default function PropertiesPage() {
                     fill
                     className="object-cover"
                     onError={(e) => {
-                      console.error('Error loading image:', property.images[0]);
                       e.currentTarget.src = '/images/placeholder.svg';
                     }}
                   />

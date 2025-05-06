@@ -47,7 +47,7 @@ export async function PUT(
     let qrCode = existingQrCode;
 
     // Create uploads directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public/uploads/property');
+    const uploadDir = path.join(process.cwd(), 'public/uploads');
     await mkdir(uploadDir, { recursive: true });
 
     // Process new images
@@ -59,7 +59,7 @@ export async function PUT(
         const filename = `${Date.now()}-${file.name}`;
         const filepath = path.join(uploadDir, filename);
         await writeFile(filepath, buffer);
-        images.push(`/uploads/property/${filename}`);
+        images.push(`/uploads/${filename}`);
       }
     }
 
@@ -71,7 +71,7 @@ export async function PUT(
       const filename = `${Date.now()}-${qrFile.name}`;
       const filepath = path.join(uploadDir, filename);
       await writeFile(filepath, buffer);
-      qrCode = `/uploads/property/${filename}`;
+      qrCode = `/uploads/${filename}`;
     }
 
     // Prepare property data

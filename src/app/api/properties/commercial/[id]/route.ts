@@ -47,7 +47,7 @@ export async function PUT(
     console.log('Received form data for update');
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'property');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadsDir, { recursive: true });
     console.log('Created uploads directory');
 
@@ -56,7 +56,7 @@ export async function PUT(
     for (let i = 0; formData.get(`images[${i}]`); i++) {
       const imageUrl = formData.get(`images[${i}]`);
       if (imageUrl && typeof imageUrl === 'string') {
-        newImagePaths.push(imageUrl);
+        newImagePaths.push(imageUrl.replace('/uploads/property/', '/uploads/'));
       }
     }
     console.log('Processed new images:', newImagePaths);
@@ -69,7 +69,7 @@ export async function PUT(
       const filename = `${Date.now()}-${qrCode.name}`;
       const filepath = path.join(uploadsDir, filename);
       await writeFile(filepath, buffer);
-      qrCodePath = `/uploads/property/${filename}`;
+      qrCodePath = `/uploads/${filename}`;
     }
     console.log('Processed QR code');
 

@@ -75,37 +75,28 @@ export default function AddCommercialPropertyPage() {
     images.forEach(image => {
       formData.append('files', image);
     });
-    formData.append('type', 'property');
-    
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
-    
     if (!response.ok) {
       throw new Error('Failed to upload images');
     }
-    
     const data = await response.json();
     return data.urls;
   };
 
   const uploadQrCode = async () => {
     if (!qrCode) return null;
-
     const formData = new FormData();
     formData.append('files', qrCode);
-    formData.append('type', 'qrcode');
-    
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
-    
     if (!response.ok) {
       throw new Error('Failed to upload QR code');
     }
-    
     const data = await response.json();
     return data.urls[0];
   };
