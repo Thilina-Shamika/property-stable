@@ -183,11 +183,7 @@ const Hero = () => {
                     <option value="0-1000000">Up to 1M</option>
                     <option value="1000000-2000000">1M - 2M</option>
                     <option value="2000000-5000000">2M - 5M</option>
-                    <option value="5000000-10000000">5M - 10M</option>
-                    <option value="10000000-15000000">10M - 15M</option>
-                    <option value="15000000-25000000">15M - 25M</option>
-                    <option value="25000000-50000000">25M - 50M</option>
-                    <option value="50000000+">50M+</option>
+                    <option value="5000000+">5M+</option>
                   </select>
 
                   <button className="px-8 py-3 bg-[#393e46] text-white rounded-full font-medium text-sm hover:bg-[#2c3e50] transition-colors" onClick={handleSearch}>

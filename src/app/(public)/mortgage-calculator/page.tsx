@@ -20,20 +20,20 @@ export default function MortgageCalculatorPage() {
 
   const calculateMonthlyRepayment = () => {
     const loanAmount = purchasePrice - downPayment;
-    const yearlyInterestRate = interestRate / 100;
-    const numberOfPayments = loanPeriod * 12;
+    const r = interestRate / 100 / 12; // monthly interest rate
+    const n = loanPeriod * 12; // total number of monthly payments
 
-    if (loanAmount <= 0 || yearlyInterestRate <= 0 || numberOfPayments <= 0) {
+    if (loanAmount <= 0 || r <= 0 || n <= 0) {
       setMonthlyRepayment(0);
       return;
     }
 
-    // Calculate monthly payment using the formula:
-    // Monthly Payment = (Loan Amount * (1 + Yearly Interest Rate)) / Number of Months
-    // Plus an additional 5% for fees and charges
-    const monthlyPayment = (loanAmount * (1 + yearlyInterestRate)) / numberOfPayments;
-    const monthlyPaymentWithFees = monthlyPayment * 1.05;
-    setMonthlyRepayment(Math.round(monthlyPaymentWithFees));
+    // Standard mortgage formula
+    // M = P * [r(1 + r)^n] / [(1 + r)^n - 1]
+    const numerator = r * Math.pow(1 + r, n);
+    const denominator = Math.pow(1 + r, n) - 1;
+    const monthlyPayment = loanAmount * (numerator / denominator);
+    setMonthlyRepayment(Math.round(monthlyPayment));
   };
 
   const handlePurchasePriceChange = (value: number) => {
@@ -72,14 +72,14 @@ export default function MortgageCalculatorPage() {
             <input
               type="range"
               min={200000}
-              max={3500000}
+              max={35000000}
               value={purchasePrice}
               onChange={(e) => handlePurchasePriceChange(Number(e.target.value))}
               className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between mt-0.5 text-xs text-gray-600">
               <span>AED {(200000).toLocaleString()}</span>
-              <span>AED {(3500000).toLocaleString()}</span>
+              <span>AED {(35000000).toLocaleString()}</span>
             </div>
             <input
               type="number"

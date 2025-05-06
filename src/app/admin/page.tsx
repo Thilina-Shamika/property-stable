@@ -21,12 +21,14 @@ export default function AdminDashboard() {
     inquiryCount: 0,
     requestCount: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Fetch actual stats from the API
     const fetchStats = async () => {
       try {
-        // Placeholder for API calls
+        setIsLoading(true);
+        // TODO: Replace with actual API call
+        // For now, using placeholder data
         setStats({
           offPlanCount: 12,
           buyCount: 45,
@@ -37,6 +39,8 @@ export default function AdminDashboard() {
         });
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -54,6 +58,14 @@ export default function AdminDashboard() {
     { label: 'Commercial Properties', value: stats.commercialCount, color: 'bg-purple-100 text-purple-800' },
     { label: 'Total Inquiries', value: stats.inquiryCount, color: 'bg-pink-100 text-pink-800' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div>

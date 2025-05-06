@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Header from '@/components/layout/Header';
@@ -27,8 +26,14 @@ interface CommercialProperty {
   qrCodeImage?: string;
 }
 
-export default function CommercialPropertyPage() {
-  const { id } = useParams();
+interface PageParams {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function CommercialPropertyPage({ params }: PageParams) {
+  const resolvedParams = use(params);
   const [property, setProperty] = useState<CommercialProperty | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,12 +48,12 @@ export default function CommercialPropertyPage() {
 
   useEffect(() => {
     fetchProperty();
-  }, [id]);
+  }, [resolvedParams.id]);
 
   const fetchProperty = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/properties/commercial/${id}`);
+      const response = await fetch(`/api/properties/commercial/${resolvedParams.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch property');
       }
@@ -72,7 +77,6 @@ export default function CommercialPropertyPage() {
     return property.images.map(src => ({ src }));
   };
 
-  // Add form handling functions
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -94,13 +98,15 @@ export default function CommercialPropertyPage() {
           email: formData.email,
           phone,
           projectName: formData.projectName,
-          propertyId: id,
+          propertyId: resolvedParams.id,
           propertyType: 'commercial',
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to submit inquiry');
+        throw new Error(data.error || 'Failed to submit inquiry');
       }
 
       // Reset form
@@ -122,7 +128,7 @@ export default function CommercialPropertyPage() {
       });
     } catch (error) {
       console.error('Error submitting inquiry:', error);
-      toast.error('Failed to register your interest. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Failed to register your interest. Please try again.');
     }
   };
 

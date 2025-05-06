@@ -9,6 +9,7 @@ import "yet-another-react-lightbox/styles.css";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { E164Number } from 'libphonenumber-js/types';
+import { toast } from 'react-hot-toast';
 
 interface OffPlanProperty {
   _id: string;
@@ -82,10 +83,51 @@ export default function OffPlanPropertyClient({ params }: { params: PageParams }
     return property.images.map(src => ({ src }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log({ ...formData, phone });
+    try {
+      const response = await fetch('/api/property-inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone,
+          projectName: formData.projectName,
+          propertyId: params.id,
+          propertyType: 'off-plan',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit inquiry');
+      }
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        projectName: ''
+      });
+      setPhone(undefined);
+      
+      toast.success(`Thank you for your interest in ${property?.title || 'this property'}! We will contact you shortly.`, {
+        duration: 5000,
+        style: {
+          background: '#333',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+      });
+    } catch (error) {
+      console.error('Error submitting inquiry:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to register your interest. Please try again.');
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useMemo } from 'react';
 
 export default function AdminLayout({
   children,
@@ -10,7 +11,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
 
-  const navigation = [
+  const navigation = useMemo(() => [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/add-buy-property', label: 'Add Buy', icon: '🏠' },
     { href: '/admin/manage-buy-property', label: 'Manage Buy', icon: '📋' },
@@ -22,7 +23,7 @@ export default function AdminLayout({
     { href: '/admin/mortgage-consulting', label: 'Mortgage Consulting', icon: '💰' },
     { href: '/admin/inquiries', label: 'Inquiries', icon: '📧' },
     { href: '/admin/property-requests', label: 'Property Requests', icon: '📝' },
-  ];
+  ], []);
 
   return (
     <div className="min-h-screen bg-gray-100">
