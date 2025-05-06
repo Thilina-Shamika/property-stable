@@ -135,7 +135,7 @@ const OffPlanSlider = () => {
 
                   <Link 
                     href={`/off-plan/${property._id}`}
-                    className="block w-full mt-4 px-6 py-2.5 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors text-center"
+                    className="block w-full mt-4 px-6 py-2.5 bg-[#393e46] text-white rounded-full hover:bg-gray-800 transition-colors text-center"
                   >
                     View Details
                   </Link>

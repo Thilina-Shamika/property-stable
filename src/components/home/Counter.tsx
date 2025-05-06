@@ -34,7 +34,7 @@ const Counter = () => {
         <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {counterData.map((item, index) => (
             <div key={index} className="text-center">
-              <div className="text-5xl font-bold text-gray-900 mb-2">
+              <div className="text-5xl font-bold text-[#393e46] mb-2">
                 {inView ? (
                   <CountUp
                     end={item.number}
